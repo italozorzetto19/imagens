@@ -3,273 +3,4448 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Biblioteca MSB</title>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.4/dist/jspdf.plugin.autotable.min.js"></script>
+
 <style>
-*{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#f4f8fa;color:#163f56}.container{max-width:1280px;margin:auto;padding:24px}.card{background:#fff;border:1px solid #d7e3e9;border-radius:18px;padding:28px;box-shadow:0 6px 24px rgba(0,40,60,.07);margin-bottom:22px}.logo{display:block;max-width:290px;max-height:100px;object-fit:contain;margin:5px auto 20px}h1,h2,h3{color:#073f5d;margin-top:0}h1{font-size:30px}.subtitle{color:#647b87;text-align:center;margin-bottom:25px}.login-card{max-width:500px;margin:8vh auto}input,select,button,textarea{font:inherit}input,select,textarea{width:100%;padding:13px 14px;border:1px solid #b9cdd7;border-radius:10px;background:#fff;color:#183f53}label{display:block;font-weight:700;font-size:14px;margin:0 0 7px;color:#355d6f}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}button{border:0;border-radius:10px;padding:12px 18px;font-weight:700;cursor:pointer}.btn{background:#087ca5;color:#fff}.btn:hover{background:#066b8e}.btn.secondary{background:#e7f0f4;color:#0b4c67}.btn.danger{background:#9b2222;color:#fff}.nav{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px}.nav button{background:#e5eef2;color:#073f5d}.nav button.active{background:#073f5d;color:#fff}.hidden{display:none!important}.alert{padding:13px 15px;border-radius:10px;margin:12px 0}.alert.warn{background:#fff5dc;color:#8b5a00}.alert.error{background:#fdeaea;color:#9b2222}.alert.ok{background:#e8f7ee;color:#176b3a}.status{font-size:13px;color:#637984;margin-top:8px}.preview{max-width:100%;max-height:300px;border-radius:12px;border:1px solid #d8e2e7;margin-top:12px}.compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:18px}.side-card{border:2px solid #dce8ed;border-radius:16px;padding:20px;background:#fbfdfe}.side-card.a{border-top:5px solid #087ca5}.side-card.b{border-top:5px solid #073f5d}.side-title{font-size:22px;font-weight:800;color:#073f5d;margin-bottom:18px}.image-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}.image-box{border:1px solid #d9e4e9;border-radius:14px;padding:16px;background:#fbfdfe}.image-box img{width:100%;height:380px;object-fit:contain;background:#f2f5f6;border-radius:10px}.meta{font-size:13px;line-height:1.6;color:#4d6977;margin-top:10px}.kpi{background:#edf5f8;border-radius:14px;padding:18px}.kpi strong{display:block;font-size:28px;color:#073f5d}.chart-wrap{height:390px;position:relative}.admin-menu{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;padding:6px;background:#edf4f7;border-radius:12px}.admin-menu button{background:transparent;color:#073f5d}.admin-menu button.active{background:#073f5d;color:#fff}.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse;background:#fff}th,td{padding:10px;border-bottom:1px solid #e1e8ec;text-align:left;font-size:13px}th{background:#edf4f7;color:#17485e;position:sticky;top:0}hr{border:0;border-top:1px solid #e0e8ec;margin:24px 0}.top-user{font-size:13px;color:#637984;margin:-8px 0 18px;text-align:center}@media(max-width:850px){.grid,.grid3,.compare-grid,.image-grid{grid-template-columns:1fr}.container{padding:12px}.card{padding:18px}.image-box img{height:280px}}
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    font-family:Arial,Helvetica,sans-serif;
+    background:#f4f8fa;
+    color:#163f56;
+}
+
+.container{
+    max-width:1250px;
+    margin:auto;
+    padding:24px;
+}
+
+.logo{
+    display:block;
+    max-width:300px;
+    max-height:100px;
+    object-fit:contain;
+    margin:10px auto 22px;
+}
+
+.card{
+    background:#fff;
+    border:1px solid #d7e3e9;
+    border-radius:18px;
+    padding:28px;
+    box-shadow:0 6px 24px rgba(0,40,60,.07);
+    margin-bottom:22px;
+}
+
+.login-card{
+    max-width:480px;
+    margin:8vh auto;
+}
+
+h1,h2,h3{
+    color:#073f5d;
+    margin-top:0;
+}
+
+h1{
+    font-size:30px;
+}
+
+.subtitle{
+    color:#647b87;
+    text-align:center;
+    margin-bottom:25px;
+}
+
+label{
+    display:block;
+    font-weight:700;
+    font-size:14px;
+    margin-bottom:7px;
+    color:#355d6f;
+}
+
+input,
+select,
+textarea,
+button{
+    font:inherit;
+}
+
+input,
+select,
+textarea{
+    width:100%;
+    padding:13px 14px;
+    border:1px solid #b9cdd7;
+    border-radius:10px;
+    background:#fff;
+    color:#183f53;
+}
+
+button{
+    border:0;
+    border-radius:10px;
+    padding:12px 18px;
+    font-weight:700;
+    cursor:pointer;
+}
+
+.btn{
+    background:#087ca5;
+    color:white;
+}
+
+.btn:hover{
+    background:#066b8e;
+}
+
+.btn.secondary{
+    background:#e7f0f4;
+    color:#0b4c67;
+}
+
+.btn.danger{
+    background:#b64040;
+    color:#fff;
+}
+
+.nav{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-bottom:20px;
+}
+
+.nav button{
+    background:#e5eef2;
+    color:#073f5d;
+}
+
+.nav button.active{
+    background:#073f5d;
+    color:#fff;
+}
+
+.hidden{
+    display:none !important;
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:18px;
+}
+
+.grid3{
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:16px;
+}
+
+.actions{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-top:18px;
+}
+
+.alert{
+    padding:13px 15px;
+    border-radius:10px;
+    margin:12px 0;
+}
+
+.alert.warn{
+    background:#fff5dc;
+    color:#8b5a00;
+}
+
+.alert.error{
+    background:#fdeaea;
+    color:#9b2222;
+}
+
+.alert.ok{
+    background:#e8f7ee;
+    color:#176b3a;
+}
+
+.status{
+    font-size:13px;
+    color:#637984;
+    margin-top:8px;
+}
+
+.admin-title{
+    background:#edf5f8;
+    border-radius:12px;
+    padding:15px;
+    margin-bottom:20px;
+}
+
+.preview{
+    max-width:100%;
+    max-height:300px;
+    border-radius:12px;
+    border:1px solid #d8e2e7;
+    margin-top:12px;
+}
+
+.table-wrap{
+    overflow:auto;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    background:#fff;
+}
+
+th,
+td{
+    padding:10px;
+    border-bottom:1px solid #e1e8ec;
+    text-align:left;
+    font-size:13px;
+}
+
+th{
+    background:#edf4f7;
+    color:#17485e;
+}
+
+.compare-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:22px;
+    margin-top:20px;
+}
+
+.compare-panel{
+    border:1px solid #d6e2e8;
+    border-radius:16px;
+    padding:20px;
+    background:#fbfdfe;
+}
+
+.compare-panel h3{
+    text-align:center;
+    font-size:22px;
+    margin-bottom:20px;
+}
+
+.compare-panel img{
+    width:100%;
+    height:430px;
+    object-fit:contain;
+    background:#f0f3f5;
+    border-radius:12px;
+    margin-top:15px;
+}
+
+.meta{
+    font-size:13px;
+    line-height:1.7;
+    color:#4d6977;
+    margin-top:12px;
+}
+
+.kpi{
+    background:#edf5f8;
+    border-radius:14px;
+    padding:18px;
+}
+
+.kpi strong{
+    display:block;
+    font-size:28px;
+    color:#073f5d;
+}
+
+.chart-wrap{
+    height:390px;
+    position:relative;
+}
+
+.section-title{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:15px;
+    flex-wrap:wrap;
+}
+
+.admin-menu{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-bottom:20px;
+}
+
+.admin-menu button{
+    background:#e7f0f4;
+    color:#073f5d;
+}
+
+.admin-menu button.active{
+    background:#073f5d;
+    color:#fff;
+}
+
+.login-error{
+    text-align:center;
+}
+
+@media(max-width:800px){
+
+    .grid,
+    .grid3,
+    .compare-grid{
+        grid-template-columns:1fr;
+    }
+
+    .container{
+        padding:12px;
+    }
+
+    .card{
+        padding:18px;
+    }
+
+    .compare-panel img{
+        height:300px;
+    }
+}
 </style>
 </head>
+
 <body>
+
+<!-- ========================================================= -->
+<!-- LOGIN -->
+<!-- ========================================================= -->
+
 <div id="loginScreen" class="container">
-  <div class="card login-card">
-    <img src="logo-msb.png" class="logo" alt="MSB Medical System do Brasil">
-    <h1 style="text-align:center">Biblioteca</h1>
-    <div class="subtitle">Acesso à biblioteca científica MSB</div>
-    <label for="loginPassword">Senha</label>
-    <input id="loginPassword" type="password" placeholder="Digite sua senha">
-    <div class="actions"><button class="btn" style="width:100%" onclick="login()">Entrar</button></div>
-    <div id="loginMsg"></div>
-  </div>
+
+    <div class="card login-card">
+
+        <img
+            src="logo-msb.png"
+            class="logo"
+            alt="MSB Medical System do Brasil"
+        >
+
+        <h1 style="text-align:center;">
+            Biblioteca
+        </h1>
+
+        <div class="subtitle">
+            Biblioteca Científica MSB
+        </div>
+
+        <label for="loginPassword">
+            Senha
+        </label>
+
+        <input
+            id="loginPassword"
+            type="password"
+            placeholder="Digite sua senha"
+            autocomplete="current-password"
+        >
+
+        <div class="actions">
+
+            <button
+                class="btn"
+                style="width:100%;"
+                onclick="login()"
+            >
+                Entrar
+            </button>
+
+        </div>
+
+        <div id="loginMsg"></div>
+
+    </div>
+
 </div>
+
+
+<!-- ========================================================= -->
+<!-- APLICAÇÃO -->
+<!-- ========================================================= -->
 
 <div id="app" class="hidden">
-  <div class="container">
-    <img src="logo-msb.png" class="logo" alt="MSB Medical System do Brasil">
-    <div id="topUser" class="top-user"></div>
+
+<div class="container">
+
+    <img
+        src="logo-msb.png"
+        class="logo"
+        alt="MSB Medical System do Brasil"
+    >
+
     <div class="nav">
-      <button id="tabMicBtn" onclick="showTab('microscopy')" class="active">🔬 Microscopia</button>
-      <button id="tabHalfBtn" onclick="showTab('half')">📊 Meia-vida</button>
-      <button id="tabAdminBtn" onclick="showTab('admin')" class="hidden">⚙ Administrador</button>
-      <button onclick="logout()">Sair</button>
+
+        <button
+            id="tabMicBtn"
+            class="active"
+            onclick="showTab('microscopy')"
+        >
+            🔬 Microscopia
+        </button>
+
+        <button
+            id="tabHalfBtn"
+            onclick="showTab('half')"
+        >
+            📊 Meia-vida
+        </button>
+
+        <button
+            id="tabAdminBtn"
+            class="hidden"
+            onclick="showTab('admin')"
+        >
+            ⚙ Administrador
+        </button>
+
+        <button
+            onclick="logout()"
+        >
+            Sair
+        </button>
+
     </div>
+
     <div id="globalStatus"></div>
 
-    <section id="microscopy" class="tab">
-      <div class="card">
-        <h2>Comparação de microscopia</h2>
-        <p class="status">A concentração deve ser a mesma para A e B. Depois selecione os parâmetros de cada amostra.</p>
+
+<!-- ========================================================= -->
+<!-- MICROSCOPIA -->
+<!-- ========================================================= -->
+
+<section id="microscopy" class="tab">
+
+<div class="card">
+
+    <h2>
+        Comparação de microscopia
+    </h2>
+
+    <p class="status">
+        Selecione uma concentração e configure as amostras A e B.
+        A concentração é obrigatoriamente a mesma para as duas imagens.
+    </p>
+
+    <div class="grid">
+
         <div>
-          <label>Concentração</label>
-          <select id="cmpConcentration" onchange="refreshComparison()"></select>
+            <label>Concentração</label>
+
+            <select
+                id="cmpConcentration"
+                onchange="refreshComparison()"
+            >
+                <option value="">
+                    Selecione...
+                </option>
+            </select>
         </div>
-        <div class="compare-grid">
-          <div class="side-card a">
-            <div class="side-title">Imagem A</div>
-            <div class="grid">
-              <div><label>Configuração da seringa</label><select id="cmpSyringeA" onchange="refreshSide('A')"></select></div>
-              <div><label>Dispositivo</label><select id="cmpDeviceA" onchange="refreshSide('A')"></select></div>
-              <div><label>Proporção</label><select id="cmpProportionA" onchange="refreshSide('A')"></select></div>
-              <div><label>Tempo da microscopia</label><select id="cmpTimeA" onchange="refreshSide('A')"></select></div>
-              <div style="grid-column:1/-1"><label>Amostra</label><select id="cmpSampleA"></select></div>
+
+        <div></div>
+
+    </div>
+
+    <div class="compare-grid">
+
+        <!-- ======================= -->
+        <!-- AMOSTRA A -->
+        <!-- ======================= -->
+
+        <div class="compare-panel">
+
+            <h3>
+                Imagem A
+            </h3>
+
+            <div>
+
+                <label>
+                    Configuração da seringa
+                </label>
+
+                <select
+                    id="cmpSyringeA"
+                    onchange="refreshSide('A')"
+                >
+                    <option value="">
+                        Selecione...
+                    </option>
+                </select>
+
             </div>
-          </div>
-          <div class="side-card b">
-            <div class="side-title">Imagem B</div>
-            <div class="grid">
-              <div><label>Configuração da seringa</label><select id="cmpSyringeB" onchange="refreshSide('B')"></select></div>
-              <div><label>Dispositivo</label><select id="cmpDeviceB" onchange="refreshSide('B')"></select></div>
-              <div><label>Proporção</label><select id="cmpProportionB" onchange="refreshSide('B')"></select></div>
-              <div><label>Tempo da microscopia</label><select id="cmpTimeB" onchange="refreshSide('B')"></select></div>
-              <div style="grid-column:1/-1"><label>Amostra</label><select id="cmpSampleB"></select></div>
+
+            <div style="margin-top:15px;">
+
+                <label>
+                    Dispositivo
+                </label>
+
+                <select
+                    id="cmpDeviceA"
+                    onchange="refreshSide('A')"
+                >
+                    <option value="">
+                        Selecione...
+                    </option>
+                </select>
+
             </div>
-          </div>
-        </div>
-        <div class="actions">
-          <button class="btn" onclick="compareImages()">Comparar imagens A × B</button>
-          <button class="btn secondary" onclick="clearComparison()">Limpar</button>
-        </div>
-        <div id="comparisonMsg"></div>
-      </div>
-      <div id="comparisonResult" class="card hidden">
-        <h2>Resultado da comparação</h2>
-        <div class="image-grid">
-          <div class="image-box"><h3>Imagem A</h3><img id="imgA"><div id="metaA" class="meta"></div></div>
-          <div class="image-box"><h3>Imagem B</h3><img id="imgB"><div id="metaB" class="meta"></div></div>
-        </div>
-      </div>
-    </section>
 
-    <section id="half" class="tab hidden">
-      <div class="card">
-        <h2>Meia-vida da espuma</h2>
-        <div class="grid3">
-          <div><label>Concentração</label><select id="halfFilterConcentration" onchange="renderHalfLife()"></select></div>
-          <div><label>Dispositivo</label><select id="halfFilterDevice" onchange="renderHalfLife()"></select></div>
-          <div><label>Seringa</label><select id="halfFilterSyringe" onchange="renderHalfLife()"></select></div>
-          <div><label>Proporção</label><select id="halfFilterProportion" onchange="renderHalfLife()"></select></div>
-          <div><label>Laboratório</label><select id="halfFilterLab" onchange="renderHalfLife()"></select></div>
-          <div><label>Operador</label><select id="halfFilterOperator" onchange="renderHalfLife()"></select></div>
-        </div>
-        <div class="actions"><button class="btn secondary" onclick="resetHalfFilters()">Limpar filtros</button><button class="btn" onclick="exportHalfExcel()">Exportar Excel</button><button class="btn" onclick="exportHalfPDF()">Exportar PDF</button></div>
-      </div>
-      <div class="card"><h2>Resultados agrupados</h2><div id="halfKpis" class="grid3"></div><hr><div class="table-wrap"><table><thead><tr><th>Concentração</th><th>Dispositivo</th><th>Seringa</th><th>Proporção</th><th>Laboratório</th><th>Operador</th><th>N</th><th>Média (s)</th></tr></thead><tbody id="halfSummaryBody"></tbody></table></div></div>
-      <div class="card"><h2>Evolução da meia-vida</h2><div class="chart-wrap"><canvas id="halfChart"></canvas></div></div>
-      <div class="card"><h2>Dados individuais</h2><div class="table-wrap"><table><thead><tr><th>Data</th><th>Dispositivo</th><th>Concentração</th><th>Seringa</th><th>Proporção</th><th>Meia-vida (s)</th><th>Operador</th><th>Laboratório</th></tr></thead><tbody id="halfRawBody"></tbody></table></div></div>
-    </section>
+            <div style="margin-top:15px;">
 
-    <section id="admin" class="tab hidden">
-      <div class="card">
-        <h2>Administrador</h2>
-        <p class="status">Área exclusiva para cadastro e alteração dos dados da biblioteca.</p>
-        <div class="admin-menu">
-          <button id="adminMicBtn" class="active" onclick="showAdminView('mic')">🔬 Cadastrar microscopia</button>
-          <button id="adminHalfBtn" onclick="showAdminView('half')">📊 Cadastrar meia-vida</button>
-        </div>
-      </div>
+                <label>
+                    Proporção
+                </label>
 
-      <div id="adminMic" class="card admin-view">
-        <h2>Cadastro de microscopia</h2>
-        <div class="grid">
-          <div><label>Dispositivo</label><select id="micDevice"><option>BFoam</option><option>Tessari</option><option>Varíxio</option><option>Steriven</option></select></div>
-          <div><label>Concentração</label><select id="micConcentration"><option>0,25%</option><option>0,50%</option><option>1%</option><option>3%</option></select></div>
-          <div><label>Configuração da seringa</label><select id="micSyringe"><option>10 ml / 10 ml</option><option>5 ml / 3 ml</option></select></div>
-          <div><label>Proporção</label><input id="micProportion" placeholder="Ex.: 1:4"></div>
-          <div><label>Tempo da microscopia (s)</label><input id="micTime" type="number" min="0" step="0.1"></div>
-          <div><label>Amostra</label><input id="micSample" placeholder="Ex.: A"></div>
-          <div style="grid-column:1/-1"><label>Imagem</label><input id="micFile" type="file" accept="image/*" onchange="previewMicImage()"><img id="micPreview" class="preview hidden"></div>
-        </div>
-        <div class="actions"><button class="btn" onclick="saveMicroscopy()">Salvar imagem</button></div><div id="micMsg"></div>
-      </div>
+                <select
+                    id="cmpProportionA"
+                    onchange="refreshSide('A')"
+                >
+                    <option value="">
+                        Selecione...
+                    </option>
+                </select>
 
-      <div id="adminHalf" class="card admin-view hidden">
-        <h2>Cadastro de meia-vida</h2>
-        <div class="grid">
-          <div><label>Dispositivo</label><select id="hlDevice"><option>BFoam</option><option>Tessari</option><option>Varíxio</option><option>Steriven</option></select></div>
-          <div><label>Concentração</label><select id="hlConcentration"><option>0,25%</option><option>0,50%</option><option>1%</option><option>3%</option></select></div>
-          <div><label>Configuração da seringa</label><select id="hlSyringe"><option>10 ml / 10 ml</option><option>5 ml / 3 ml</option></select></div>
-          <div><label>Proporção</label><input id="hlProportion" placeholder="Ex.: 1:4"></div>
-          <div><label>Meia-vida (s)</label><input id="hlSeconds" type="number" min="0" step="0.01"></div>
-          <div><label>Operador</label><input id="hlOperator"></div>
-          <div><label>Laboratório</label><input id="hlLab"></div>
+            </div>
+
+            <div style="margin-top:15px;">
+
+                <label>
+                    Tempo
+                </label>
+
+                <select
+                    id="cmpTimeA"
+                    onchange="refreshSide('A')"
+                >
+                    <option value="">
+                        Selecione...
+                    </option>
+                </select>
+
+            </div>
+
+            <div style="margin-top:15px;">
+
+                <label>
+                    Amostra
+                </label>
+
+                <select
+                    id="cmpSampleA"
+                >
+                    <option value="">
+                        Selecione...
+                    </option>
+                </select>
+
+            </div>
+
         </div>
-        <div class="actions"><button class="btn" onclick="saveHalfLife()">Cadastrar medição</button><input id="hlExcel" type="file" accept=".xlsx,.xls,.csv" onchange="importHalfExcel(event)"></div>
-        <div id="hlMsg"></div><p class="status">Excel: Dispositivo, Concentração, Meia-vida, Operador, Seringa, Proporção e Laboratório.</p>
-      </div>
-    </section>
-  </div>
+
+
+        <!-- ======================= -->
+        <!-- AMOSTRA B -->
+        <!-- ======================= -->
+
+        <div class="compare-panel">
+
+            <h3>
+                Imagem B
+            </h3>
+
+            <div>
+
+                <label>
+                    Configuração da seringa
+                </label>
+
+                <select
+                    id="cmpSyringeB"
+                    onchange="refreshSide('B')"
+                >
+                    <option value="">
+                        Selecione...
+                    </option>
+                </select>
+
+            </div>
+
+            <div style="margin-top:15px;">
+
+                <label>
+                    Dispositivo
+                </label>
+
+                <select
+                    id="cmpDeviceB"
+                    onchange="refreshSide('B')"
+                >
+                    <option value="">
+                        Selecione...
+                    </option>
+                </select>
+
+            </div>
+
+            <div style="margin-top:15px;">
+
+                <label>
+                    Proporção
+                </label>
+
+                <select
+                    id="cmpProportionB"
+                    onchange="refreshSide('B')"
+                >
+                    <option value="">
+                        Selecione...
+                    </option>
+                </select>
+
+            </div>
+
+            <div style="margin-top:15px;">
+
+                <label>
+                    Tempo
+                </label>
+
+                <select
+                    id="cmpTimeB"
+                    onchange="refreshSide('B')"
+                >
+                    <option value="">
+                        Selecione...
+                    </option>
+                </select>
+
+            </div>
+
+            <div style="margin-top:15px;">
+
+                <label>
+                    Amostra
+                </label>
+
+                <select
+                    id="cmpSampleB"
+                >
+                    <option value="">
+                        Selecione...
+                    </option>
+                </select>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="actions">
+
+        <button
+            class="btn"
+            onclick="compareImages()"
+        >
+            Comparar imagens A × B
+        </button>
+
+        <button
+            class="btn secondary"
+            onclick="clearComparison()"
+        >
+            Limpar
+        </button>
+
+    </div>
+
+    <div id="comparisonMsg"></div>
+
 </div>
 
+
+<!-- RESULTADO -->
+
+<div
+    id="comparisonResult"
+    class="card hidden"
+>
+
+    <h2>
+        Comparação
+    </h2>
+
+    <div class="compare-grid">
+
+        <div class="compare-panel">
+
+            <h3>
+                Imagem A
+            </h3>
+
+            <img id="imgA">
+
+            <div
+                id="metaA"
+                class="meta"
+            ></div>
+
+        </div>
+
+        <div class="compare-panel">
+
+            <h3>
+                Imagem B
+            </h3>
+
+            <img id="imgB">
+
+            <div
+                id="metaB"
+                class="meta"
+            ></div>
+
+        </div>
+
+    </div>
+
+</div>
+
+</section>
+
+
+<!-- ========================================================= -->
+<!-- MEIA VIDA -->
+<!-- ========================================================= -->
+
+<section
+    id="half"
+    class="tab hidden"
+>
+
+<div class="card">
+
+    <div class="section-title">
+
+        <h2>
+            Meia-vida da espuma
+        </h2>
+
+    </div>
+
+    <div class="grid3">
+
+        <div>
+
+            <label>
+                Concentração
+            </label>
+
+            <select
+                id="halfFilterConcentration"
+                onchange="renderHalfLife()"
+            >
+                <option value="">
+                    Todas
+                </option>
+            </select>
+
+        </div>
+
+        <div>
+
+            <label>
+                Dispositivo
+            </label>
+
+            <select
+                id="halfFilterDevice"
+                onchange="renderHalfLife()"
+            >
+                <option value="">
+                    Todos
+                </option>
+            </select>
+
+        </div>
+
+        <div>
+
+            <label>
+                Seringa
+            </label>
+
+            <select
+                id="halfFilterSyringe"
+                onchange="renderHalfLife()"
+            >
+                <option value="">
+                    Todas
+                </option>
+            </select>
+
+        </div>
+
+        <div>
+
+            <label>
+                Proporção
+            </label>
+
+            <select
+                id="halfFilterProportion"
+                onchange="renderHalfLife()"
+            >
+                <option value="">
+                    Todas
+                </option>
+            </select>
+
+        </div>
+
+        <div>
+
+            <label>
+                Laboratório
+            </label>
+
+            <select
+                id="halfFilterLab"
+                onchange="renderHalfLife()"
+            >
+                <option value="">
+                    Todos
+                </option>
+            </select>
+
+        </div>
+
+        <div>
+
+            <label>
+                Operador
+            </label>
+
+            <select
+                id="halfFilterOperator"
+                onchange="renderHalfLife()"
+            >
+                <option value="">
+                    Todos
+                </option>
+            </select>
+
+        </div>
+
+    </div>
+
+    <div class="actions">
+
+        <button
+            class="btn secondary"
+            onclick="resetHalfFilters()"
+        >
+            Limpar filtros
+        </button>
+
+        <button
+            class="btn"
+            onclick="exportHalfExcel()"
+        >
+            Exportar Excel
+        </button>
+
+        <button
+            class="btn"
+            onclick="exportHalfPDF()"
+        >
+            Exportar PDF
+        </button>
+
+    </div>
+
+</div>
+
+
+<div class="card">
+
+    <h2>
+        Resultados agrupados
+    </h2>
+
+    <div
+        id="halfKpis"
+        class="grid3"
+    ></div>
+
+    <hr>
+
+    <div class="table-wrap">
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        Concentração
+                    </th>
+
+                    <th>
+                        Dispositivo
+                    </th>
+
+                    <th>
+                        Seringa
+                    </th>
+
+                    <th>
+                        Proporção
+                    </th>
+
+                    <th>
+                        Laboratório
+                    </th>
+
+                    <th>
+                        Operador
+                    </th>
+
+                    <th>
+                        N
+                    </th>
+
+                    <th>
+                        Média (s)
+                    </th>
+
+                </tr>
+
+            </thead>
+
+            <tbody id="halfSummaryBody"></tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+
+<div class="card">
+
+    <h2>
+        Evolução da meia-vida
+    </h2>
+
+    <div class="chart-wrap">
+
+        <canvas id="halfChart"></canvas>
+
+    </div>
+
+</div>
+
+
+<div class="card">
+
+    <h2>
+        Dados individuais
+    </h2>
+
+    <div class="table-wrap">
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>Data</th>
+                    <th>Dispositivo</th>
+                    <th>Concentração</th>
+                    <th>Seringa</th>
+                    <th>Proporção</th>
+                    <th>Meia-vida (s)</th>
+                    <th>Operador</th>
+                    <th>Laboratório</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody id="halfRawBody"></tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+</section>
+
+
+<!-- ========================================================= -->
+<!-- ADMINISTRADOR -->
+<!-- ========================================================= -->
+
+<section
+    id="admin"
+    class="tab hidden"
+>
+
+<div class="card">
+
+    <div class="admin-title">
+
+        <h2>
+            Área do Administrador
+        </h2>
+
+        <p class="status">
+            Esta área permite cadastrar imagens microscópicas
+            e resultados de meia-vida.
+        </p>
+
+    </div>
+
+    <div class="admin-menu">
+
+        <button
+            id="adminImagesBtn"
+            class="active"
+            onclick="showAdminSection('images')"
+        >
+            🔬 Cadastrar microscopia
+        </button>
+
+        <button
+            id="adminHalfBtn"
+            onclick="showAdminSection('half')"
+        >
+            📊 Cadastrar meia-vida
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- =========================== -->
+<!-- CADASTRO MICROSCOPIA -->
+<!-- =========================== -->
+
+<div
+    id="adminImages"
+>
+
+<div class="card">
+
+    <h2>
+        Cadastro de microscopia
+    </h2>
+
+    <div class="grid">
+
+        <div>
+
+            <label>
+                Dispositivo
+            </label>
+
+            <select id="micDevice">
+
+                <option>BFoam</option>
+                <option>Tessari</option>
+                <option>Varíxio</option>
+                <option>Steriven</option>
+
+            </select>
+
+        </div>
+
+
+        <div>
+
+            <label>
+                Concentração
+            </label>
+
+            <select id="micConcentration">
+
+                <option>0,25%</option>
+                <option>0,50%</option>
+                <option>1%</option>
+                <option>3%</option>
+
+            </select>
+
+        </div>
+
+
+        <div>
+
+            <label>
+                Configuração da seringa
+            </label>
+
+            <select id="micSyringe">
+
+                <option>10 ml / 10 ml</option>
+                <option>5 ml / 3 ml</option>
+
+            </select>
+
+        </div>
+
+
+        <div>
+
+            <label>
+                Proporção
+            </label>
+
+            <input
+                id="micProportion"
+                placeholder="Ex.: 1:4"
+            >
+
+        </div>
+
+
+        <div>
+
+            <label>
+                Tempo da microscopia (s)
+            </label>
+
+            <input
+                id="micTime"
+                type="number"
+                min="0"
+                step="0.1"
+            >
+
+        </div>
+
+
+        <div>
+
+            <label>
+                Amostra
+            </label>
+
+            <input
+                id="micSample"
+                placeholder="Ex.: A"
+            >
+
+        </div>
+
+    </div>
+
+
+    <div style="margin-top:18px;">
+
+        <label>
+            Imagem microscópica
+        </label>
+
+        <input
+            id="micFile"
+            type="file"
+            accept="image/*"
+            onchange="previewMicImage()"
+        >
+
+        <img
+            id="micPreview"
+            class="preview hidden"
+        >
+
+    </div>
+
+
+    <div class="actions">
+
+        <button
+            class="btn"
+            onclick="saveMicroscopy()"
+        >
+            Salvar imagem
+        </button>
+
+    </div>
+
+    <div id="micMsg"></div>
+
+</div>
+
+</div>
+
+
+<!-- =========================== -->
+<!-- CADASTRO MEIA VIDA -->
+<!-- =========================== -->
+
+<div
+    id="adminHalf"
+    class="hidden"
+>
+
+<div class="card">
+
+    <h2>
+        Cadastro de meia-vida
+    </h2>
+
+    <div class="grid">
+
+        <div>
+
+            <label>
+                Dispositivo
+            </label>
+
+            <select id="hlDevice">
+
+                <option>BFoam</option>
+                <option>Tessari</option>
+                <option>Varíxio</option>
+                <option>Steriven</option>
+
+            </select>
+
+        </div>
+
+
+        <div>
+
+            <label>
+                Concentração
+            </label>
+
+            <select id="hlConcentration">
+
+                <option>0,25%</option>
+                <option>0,50%</option>
+                <option>1%</option>
+                <option>3%</option>
+
+            </select>
+
+        </div>
+
+
+        <div>
+
+            <label>
+                Configuração da seringa
+            </label>
+
+            <select id="hlSyringe">
+
+                <option>10 ml / 10 ml</option>
+                <option>5 ml / 3 ml</option>
+
+            </select>
+
+        </div>
+
+
+        <div>
+
+            <label>
+                Proporção
+            </label>
+
+            <input
+                id="hlProportion"
+                placeholder="Ex.: 1:4"
+            >
+
+        </div>
+
+
+        <div>
+
+            <label>
+                Meia-vida (s)
+            </label>
+
+            <input
+                id="hlSeconds"
+                type="number"
+                min="0"
+                step="0.01"
+            >
+
+        </div>
+
+
+        <div>
+
+            <label>
+                Operador
+            </label>
+
+            <input
+                id="hlOperator"
+            >
+
+        </div>
+
+
+        <div>
+
+            <label>
+                Laboratório
+            </label>
+
+            <input
+                id="hlLab"
+            >
+
+        </div>
+
+    </div>
+
+
+    <div class="actions">
+
+        <button
+            class="btn"
+            onclick="saveHalfLife()"
+        >
+            Cadastrar medição
+        </button>
+
+        <input
+            id="hlExcel"
+            type="file"
+            accept=".xlsx,.xls,.csv"
+            onchange="importHalfExcel(event)"
+        >
+
+    </div>
+
+    <div id="hlMsg"></div>
+
+    <p class="status">
+        Excel: Dispositivo, Concentração, Meia-vida,
+        Operador, Seringa, Proporção e Laboratório.
+    </p>
+
+</div>
+
+</div>
+
+</section>
+
+</div>
+</div>
+
+
 <script>
-const SUPABASE_URL="https://spbnkgqlnrtpttjuwsuz.supabase.co";
-const SUPABASE_KEY="sb_publishable_t5QJMKmPRDQExvnNIAOExA_PE6VIIyU";
-const ADMIN_EMAIL="admin@msb.local";
-const USER_EMAIL="biblioteca@msb.local";
-let sb=null,currentRole=null,currentUser=null,microscopyRows=[],halfRows=[],halfChart=null;
 
-try{sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);}catch(e){console.error(e)}
+/* ============================================================
+   CONFIGURAÇÃO SUPABASE
+   ============================================================ */
 
-document.addEventListener("DOMContentLoaded",async()=>{
-  document.getElementById("loginPassword").addEventListener("keydown",e=>{if(e.key==="Enter")login()});
-  if(sb){const {data}=await sb.auth.getUser();if(data.user) await enterAuthenticated(data.user)}
-});
-function esc(v){return String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[m]))}
-function msg(id,t,type="warn"){const e=document.getElementById(id);if(e)e.innerHTML=`<div class="alert ${type}">${esc(t)}</div>`}
+const SUPABASE_URL =
+    "https://spbnkgqlnrtpttjuwsuz.supabase.co";
+
+const SUPABASE_KEY =
+    "sb_publishable_t5QJMKmPRDQExvnNIAOExA_PE6VIIyU";
+
+const ADMIN_EMAIL =
+    "admin@msb.local";
+
+const USER_EMAIL =
+    "biblioteca@msb.local";
+
+
+/* ============================================================
+   VARIÁVEIS
+   ============================================================ */
+
+let sb = null;
+
+let currentUser = null;
+
+let currentRole = null;
+
+let microscopyRows = [];
+
+let halfRows = [];
+
+let halfChart = null;
+
+
+/* ============================================================
+   INICIALIZAÇÃO
+   ============================================================ */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    async function(){
+
+        try{
+
+            if(
+                !window.supabase ||
+                !window.supabase.createClient
+            ){
+
+                showLoginError(
+                    "Não foi possível carregar o Supabase. Atualize a página."
+                );
+
+                return;
+            }
+
+            sb =
+                window.supabase.createClient(
+                    SUPABASE_URL,
+                    SUPABASE_KEY,
+                    {
+                        auth:{
+                            persistSession:true,
+                            autoRefreshToken:true,
+                            detectSessionInUrl:false
+                        }
+                    }
+                );
+
+
+            document
+                .getElementById("loginPassword")
+                .addEventListener(
+                    "keydown",
+                    function(e){
+
+                        if(e.key === "Enter"){
+                            login();
+                        }
+
+                    }
+                );
+
+
+            /*
+             * Sempre começa mostrando a tela de login.
+             * A sessão antiga é encerrada para evitar
+             * que o navegador pule diretamente para o sistema.
+             */
+
+            await sb.auth.signOut();
+
+            showLoginScreen();
+
+        }
+        catch(error){
+
+            console.error(error);
+
+            showLoginError(
+                "Erro ao iniciar a biblioteca: " +
+                error.message
+            );
+
+        }
+
+    }
+);
+
+
+/* ============================================================
+   LOGIN
+   ============================================================ */
 
 async function login(){
-  const password=document.getElementById("loginPassword").value.trim();
-  if(!password){msg("loginMsg","Digite a senha.");return}
-  if(!sb){msg("loginMsg","Supabase não foi inicializado.","error");return}
-  msg("loginMsg","Entrando...");
-  let result=await sb.auth.signInWithPassword({email:ADMIN_EMAIL,password});
-  if(result.data?.user){await enterAuthenticated(result.data.user);return}
-  await sb.auth.signOut();
-  result=await sb.auth.signInWithPassword({email:USER_EMAIL,password});
-  if(result.data?.user){await enterAuthenticated(result.data.user);return}
-  msg("loginMsg","Senha inválida ou usuário não autorizado.","error");
+
+    const password =
+        document
+            .getElementById("loginPassword")
+            .value
+            .trim();
+
+
+    if(!password){
+
+        showLoginError(
+            "Digite a senha."
+        );
+
+        return;
+    }
+
+
+    if(!sb){
+
+        showLoginError(
+            "Supabase não foi inicializado."
+        );
+
+        return;
+    }
+
+
+    showLoginInfo(
+        "Entrando..."
+    );
+
+
+    /*
+     * Primeiro tenta a conta de administrador.
+     */
+
+    let result =
+        await sb.auth.signInWithPassword({
+
+            email:ADMIN_EMAIL,
+
+            password:password
+
+        });
+
+
+    if(
+        result.data &&
+        result.data.user
+    ){
+
+        currentUser =
+            result.data.user;
+
+        await finishLogin();
+
+        return;
+    }
+
+
+    /*
+     * Se não for administrador,
+     * tenta o usuário comum.
+     */
+
+    await sb.auth.signOut();
+
+
+    result =
+        await sb.auth.signInWithPassword({
+
+            email:USER_EMAIL,
+
+            password:password
+
+        });
+
+
+    if(
+        result.data &&
+        result.data.user
+    ){
+
+        currentUser =
+            result.data.user;
+
+        await finishLogin();
+
+        return;
+    }
+
+
+    /*
+     * Nenhuma das duas senhas funcionou.
+     */
+
+    await sb.auth.signOut();
+
+    currentUser = null;
+
+    showLoginError(
+        "Senha incorreta."
+    );
+
 }
 
-async function enterAuthenticated(user){
-  currentUser=user;
-  const {data:profile,error}=await sb.from("profiles").select("role").eq("id",user.id).maybeSingle();
-  if(error){msg("loginMsg","Não foi possível verificar o perfil: "+error.message,"error");await sb.auth.signOut();return}
-  currentRole=profile?.role||"user";
-  document.getElementById("loginScreen").classList.add("hidden");
-  document.getElementById("app").classList.remove("hidden");
-  document.getElementById("tabAdminBtn").classList.toggle("hidden",currentRole!=="admin");
-  document.getElementById("topUser").textContent=currentRole==="admin"?"Acesso: Administrador":"Acesso: Usuário";
-  await loadAllData();
-  showTab("microscopy");
-}
-async function logout(){await sb.auth.signOut();currentRole=null;currentUser=null;document.getElementById("app").classList.add("hidden");document.getElementById("loginScreen").classList.remove("hidden");document.getElementById("loginPassword").value="";document.getElementById("loginMsg").innerHTML=""}
 
-function showTab(t){
-  document.querySelectorAll(".tab").forEach(x=>x.classList.add("hidden"));
-  document.getElementById(t).classList.remove("hidden");
-  document.querySelectorAll(".nav button").forEach(x=>x.classList.remove("active"));
-  if(t==="microscopy")document.getElementById("tabMicBtn").classList.add("active");
-  if(t==="half"){document.getElementById("tabHalfBtn").classList.add("active");renderHalfLife()}
-  if(t==="admin"){if(currentRole!=="admin")return;document.getElementById("tabAdminBtn").classList.add("active");showAdminView("mic")}
+/* ============================================================
+   FINALIZA LOGIN
+   ============================================================ */
+
+async function finishLogin(){
+
+    try{
+
+        /*
+         * Busca o perfil pelo UUID autenticado.
+         */
+
+        const response =
+            await sb
+                .from("profiles")
+                .select("role")
+                .eq("id", currentUser.id)
+                .maybeSingle();
+
+
+        if(response.error){
+
+            console.error(response.error);
+
+            /*
+             * Fallback pelo e-mail.
+             * Serve para o sistema continuar funcionando
+             * caso a tabela profiles ainda não tenha sido
+             * carregada corretamente.
+             */
+
+            if(
+                currentUser.email === ADMIN_EMAIL
+            ){
+
+                currentRole = "admin";
+
+            }
+            else{
+
+                currentRole = "user";
+
+            }
+
+        }
+        else if(
+            response.data &&
+            response.data.role
+        ){
+
+            currentRole =
+                response.data.role;
+
+        }
+        else{
+
+            /*
+             * Se não houver perfil, usa o e-mail.
+             */
+
+            if(
+                currentUser.email === ADMIN_EMAIL
+            ){
+
+                currentRole = "admin";
+
+            }
+            else{
+
+                currentRole = "user";
+
+            }
+
+        }
+
+
+        /*
+         * Mostra aplicação.
+         */
+
+        document
+            .getElementById("loginScreen")
+            .classList
+            .add("hidden");
+
+
+        document
+            .getElementById("app")
+            .classList
+            .remove("hidden");
+
+
+        /*
+         * Mostra ou esconde administrador.
+         */
+
+        document
+            .getElementById("tabAdminBtn")
+            .classList
+            .toggle(
+                "hidden",
+                currentRole !== "admin"
+            );
+
+
+        /*
+         * Limpa senha.
+         */
+
+        document
+            .getElementById("loginPassword")
+            .value = "";
+
+
+        /*
+         * Carrega banco.
+         */
+
+        await loadAllData();
+
+
+        showTab("microscopy");
+
+
+    }
+    catch(error){
+
+        console.error(error);
+
+        await sb.auth.signOut();
+
+        currentUser = null;
+
+        currentRole = null;
+
+        showLoginScreen();
+
+        showLoginError(
+            "Erro ao entrar: " +
+            error.message
+        );
+
+    }
+
 }
-function showAdminView(v){if(currentRole!=="admin")return;document.getElementById("adminMic").classList.toggle("hidden",v!=="mic");document.getElementById("adminHalf").classList.toggle("hidden",v!=="half");document.getElementById("adminMicBtn").classList.toggle("active",v==="mic");document.getElementById("adminHalfBtn").classList.toggle("active",v==="half")}
+
+
+/* ============================================================
+   TELA LOGIN
+   ============================================================ */
+
+function showLoginScreen(){
+
+    document
+        .getElementById("loginScreen")
+        .classList
+        .remove("hidden");
+
+
+    document
+        .getElementById("app")
+        .classList
+        .add("hidden");
+
+}
+
+
+function showLoginError(text){
+
+    document
+        .getElementById("loginMsg")
+        .innerHTML =
+            '<div class="alert error login-error">' +
+            escapeHtml(text) +
+            '</div>';
+
+}
+
+
+function showLoginInfo(text){
+
+    document
+        .getElementById("loginMsg")
+        .innerHTML =
+            '<div class="alert warn login-error">' +
+            escapeHtml(text) +
+            '</div>';
+
+}
+
+
+/* ============================================================
+   LOGOUT
+   ============================================================ */
+
+async function logout(){
+
+    if(sb){
+
+        await sb.auth.signOut();
+
+    }
+
+    currentUser = null;
+
+    currentRole = null;
+
+    microscopyRows = [];
+
+    halfRows = [];
+
+
+    document
+        .getElementById("loginPassword")
+        .value = "";
+
+
+    document
+        .getElementById("loginMsg")
+        .innerHTML = "";
+
+
+    showLoginScreen();
+
+}
+
+
+/* ============================================================
+   ABAS PRINCIPAIS
+   ============================================================ */
+
+function showTab(tab){
+
+    document
+        .querySelectorAll(".tab")
+        .forEach(
+            function(element){
+
+                element
+                    .classList
+                    .add("hidden");
+
+            }
+        );
+
+
+    document
+        .getElementById(tab)
+        .classList
+        .remove("hidden");
+
+
+    document
+        .querySelectorAll(".nav button")
+        .forEach(
+            function(button){
+
+                button
+                    .classList
+                    .remove("active");
+
+            }
+        );
+
+
+    if(tab === "microscopy"){
+
+        document
+            .getElementById("tabMicBtn")
+            .classList
+            .add("active");
+
+    }
+
+
+    if(tab === "half"){
+
+        document
+            .getElementById("tabHalfBtn")
+            .classList
+            .add("active");
+
+        renderHalfLife();
+
+    }
+
+
+    if(tab === "admin"){
+
+        if(currentRole !== "admin"){
+
+            showTab("microscopy");
+
+            return;
+
+        }
+
+        document
+            .getElementById("tabAdminBtn")
+            .classList
+            .add("active");
+
+    }
+
+}
+
+
+/* ============================================================
+   ADMIN SUB-ABAS
+   ============================================================ */
+
+function showAdminSection(section){
+
+    if(currentRole !== "admin"){
+
+        return;
+
+    }
+
+
+    document
+        .getElementById("adminImages")
+        .classList
+        .toggle(
+            "hidden",
+            section !== "images"
+        );
+
+
+    document
+        .getElementById("adminHalf")
+        .classList
+        .toggle(
+            "hidden",
+            section !== "half"
+        );
+
+
+    document
+        .getElementById("adminImagesBtn")
+        .classList
+        .toggle(
+            "active",
+            section === "images"
+        );
+
+
+    document
+        .getElementById("adminHalfBtn")
+        .classList
+        .toggle(
+            "active",
+            section === "half"
+        );
+
+}
+
+
+/* ============================================================
+   CARREGAR DADOS
+   ============================================================ */
 
 async function loadAllData(){
-  const [m,h]=await Promise.all([
-    sb.from("microscopy_images").select("*").order("created_at",{ascending:false}),
-    sb.from("half_life_tests").select("*").order("created_at",{ascending:false})
-  ]);
-  if(m.error)msg("globalStatus","Erro ao ler microscopia: "+m.error.message,"error");else microscopyRows=m.data||[];
-  if(h.error)msg("globalStatus","Erro ao ler meia-vida: "+h.error.message,"error");else halfRows=h.data||[];
-  loadComparisonOptions();loadHalfFilters();
+
+    if(!sb){
+
+        return;
+
+    }
+
+
+    document
+        .getElementById("globalStatus")
+        .innerHTML = "";
+
+
+    const microscopyResult =
+        await sb
+            .from("microscopy_images")
+            .select("*")
+            .order(
+                "created_at",
+                {
+                    ascending:false
+                }
+            );
+
+
+    if(microscopyResult.error){
+
+        console.error(
+            microscopyResult.error
+        );
+
+        document
+            .getElementById("globalStatus")
+            .innerHTML =
+                '<div class="alert error">' +
+                'Erro ao carregar microscopia: ' +
+                escapeHtml(
+                    microscopyResult.error.message
+                ) +
+                '</div>';
+
+    }
+    else{
+
+        microscopyRows =
+            microscopyResult.data || [];
+
+    }
+
+
+    const halfResult =
+        await sb
+            .from("half_life_tests")
+            .select("*")
+            .order(
+                "created_at",
+                {
+                    ascending:false
+                }
+            );
+
+
+    if(halfResult.error){
+
+        console.error(
+            halfResult.error
+        );
+
+    }
+    else{
+
+        halfRows =
+            halfResult.data || [];
+
+    }
+
+
+    loadComparisonOptions();
+
+    loadHalfFilters();
+
 }
-function uniq(a){return [...new Set(a.filter(v=>v!==null&&v!==undefined&&String(v)!==""))].map(String).sort((a,b)=>a.localeCompare(b,"pt-BR",{numeric:true}))}
-function opts(id,vals,keep=""){const e=document.getElementById(id);const old=keep||e.value;const u=uniq(vals);e.innerHTML='<option value="">Selecione...</option>'+u.map(v=>`<option value="${esc(v)}">${esc(v)}</option>`).join("");if(u.includes(old))e.value=old}
+
+
+/* ============================================================
+   UTILITÁRIOS
+   ============================================================ */
+
+function escapeHtml(value){
+
+    return String(value ?? "")
+        .replace(
+            /[&<>"']/g,
+            function(char){
+
+                return {
+                    "&":"&amp;",
+                    "<":"&lt;",
+                    ">":"&gt;",
+                    '"':"&quot;",
+                    "'":"&#039;"
+                }[char];
+
+            }
+        );
+
+}
+
+
+function uniqueValues(values){
+
+    return [
+        ...new Set(
+            values
+                .filter(
+                    function(value){
+
+                        return (
+                            value !== null &&
+                            value !== undefined &&
+                            String(value) !== ""
+                        );
+
+                    }
+                )
+                .map(String)
+        )
+    ]
+    .sort(
+        function(a,b){
+
+            return a.localeCompare(
+                b,
+                "pt-BR",
+                {
+                    numeric:true
+                }
+            );
+
+        }
+    );
+
+}
+
+
+function fillSelect(
+    id,
+    values,
+    keepValue = ""
+){
+
+    const select =
+        document.getElementById(id);
+
+
+    if(!select){
+
+        return;
+
+    }
+
+
+    const unique =
+        uniqueValues(values);
+
+
+    let html =
+        '<option value="">Selecione...</option>';
+
+
+    unique.forEach(
+        function(value){
+
+            html +=
+                '<option value="' +
+                escapeHtml(value) +
+                '">' +
+                escapeHtml(value) +
+                '</option>';
+
+        }
+    );
+
+
+    select.innerHTML = html;
+
+
+    if(
+        keepValue &&
+        unique.includes(String(keepValue))
+    ){
+
+        select.value =
+            String(keepValue);
+
+    }
+
+}
+
+
+/* ============================================================
+   COMPARAÇÃO DE MICROSCOPIA
+   ============================================================ */
+
+function loadComparisonOptions(){
+
+    const concentration =
+        document
+            .getElementById(
+                "cmpConcentration"
+            )
+            .value;
+
+
+    const old =
+        concentration;
+
+
+    fillSelect(
+        "cmpConcentration",
+        microscopyRows.map(
+            r => r.concentration
+        ),
+        old
+    );
+
+
+    if(!microscopyRows.length){
+
+        clearComparisonSelectors();
+
+        return;
+
+    }
+
+
+    refreshSide("A");
+
+    refreshSide("B");
+
+}
+
+
+function clearComparisonSelectors(){
+
+    const ids = [
+
+        "cmpSyringeA",
+        "cmpDeviceA",
+        "cmpProportionA",
+        "cmpTimeA",
+        "cmpSampleA",
+
+        "cmpSyringeB",
+        "cmpDeviceB",
+        "cmpProportionB",
+        "cmpTimeB",
+        "cmpSampleB"
+
+    ];
+
+
+    ids.forEach(
+        function(id){
+
+            const element =
+                document.getElementById(id);
+
+            if(element){
+
+                element.innerHTML =
+                    '<option value="">Selecione...</option>';
+
+            }
+
+        }
+    );
+
+}
+
 
 function getSideRows(side){
-  const c=document.getElementById("cmpConcentration").value;
-  const syringe=document.getElementById("cmpSyringe"+side).value;
-  const device=document.getElementById("cmpDevice"+side).value;
-  const proportion=document.getElementById("cmpProportion"+side).value;
-  const time=document.getElementById("cmpTime"+side).value;
-  let rows=microscopyRows.filter(r=>!c||String(r.concentration)===c);
-  if(syringe)rows=rows.filter(r=>String(r.syringe_config)===syringe);
-  if(device)rows=rows.filter(r=>String(r.device)===device);
-  if(proportion)rows=rows.filter(r=>String(r.proportion)===proportion);
-  if(time)rows=rows.filter(r=>String(r.collection_time_seconds)===time);
-  return rows;
+
+    const concentration =
+        document
+            .getElementById(
+                "cmpConcentration"
+            )
+            .value;
+
+
+    let rows =
+        microscopyRows.filter(
+            function(row){
+
+                return (
+                    !concentration ||
+                    String(row.concentration) ===
+                    String(concentration)
+                );
+
+            }
+        );
+
+
+    const syringe =
+        document
+            .getElementById(
+                "cmpSyringe" + side
+            )
+            .value;
+
+
+    if(syringe){
+
+        rows =
+            rows.filter(
+                r =>
+                    String(r.syringe_config) ===
+                    String(syringe)
+            );
+
+    }
+
+
+    const device =
+        document
+            .getElementById(
+                "cmpDevice" + side
+            )
+            .value;
+
+
+    if(device){
+
+        rows =
+            rows.filter(
+                r =>
+                    String(r.device) ===
+                    String(device)
+            );
+
+    }
+
+
+    const proportion =
+        document
+            .getElementById(
+                "cmpProportion" + side
+            )
+            .value;
+
+
+    if(proportion){
+
+        rows =
+            rows.filter(
+                r =>
+                    String(r.proportion) ===
+                    String(proportion)
+            );
+
+    }
+
+
+    const time =
+        document
+            .getElementById(
+                "cmpTime" + side
+            )
+            .value;
+
+
+    if(time){
+
+        rows =
+            rows.filter(
+                r =>
+                    String(r.collection_time_seconds) ===
+                    String(time)
+            );
+
+    }
+
+
+    return rows;
+
 }
-function refreshComparison(){
-  const c=document.getElementById("cmpConcentration");const old=c.value;opts("cmpConcentration",microscopyRows.map(r=>r.concentration),old);
-  ["A","B"].forEach(s=>refreshSide(s));
-}
+
+
 function refreshSide(side){
-  const c=document.getElementById("cmpConcentration").value;
-  let base=microscopyRows.filter(r=>!c||String(r.concentration)===c);
-  const ids=["cmpSyringe","cmpDevice","cmpProportion","cmpTime","cmpSample"].map(x=>x+side);
-  const values=ids.map(id=>document.getElementById(id).value);
-  opts("cmpSyringe"+side,base.map(r=>r.syringe_config),values[0]);
-  let rows=base.filter(r=>!document.getElementById("cmpSyringe"+side).value||String(r.syringe_config)===document.getElementById("cmpSyringe"+side).value);
-  opts("cmpDevice"+side,rows.map(r=>r.device),values[1]);
-  rows=rows.filter(r=>!document.getElementById("cmpDevice"+side).value||String(r.device)===document.getElementById("cmpDevice"+side).value);
-  opts("cmpProportion"+side,rows.map(r=>r.proportion),values[2]);
-  rows=rows.filter(r=>!document.getElementById("cmpProportion"+side).value||String(r.proportion)===document.getElementById("cmpProportion"+side).value);
-  opts("cmpTime"+side,rows.map(r=>r.collection_time_seconds),values[3]);
-  rows=rows.filter(r=>!document.getElementById("cmpTime"+side).value||String(r.collection_time_seconds)===document.getElementById("cmpTime"+side).value);
-  opts("cmpSample"+side,rows.map(r=>r.sample),values[4]);
+
+    if(!document.getElementById("cmpConcentration")){
+
+        return;
+
+    }
+
+
+    const concentration =
+        document
+            .getElementById(
+                "cmpConcentration"
+            )
+            .value;
+
+
+    let base =
+        microscopyRows.filter(
+            function(row){
+
+                return (
+                    !concentration ||
+                    String(row.concentration) ===
+                    String(concentration)
+                );
+
+            }
+        );
+
+
+    const syringeId =
+        "cmpSyringe" + side;
+
+    const deviceId =
+        "cmpDevice" + side;
+
+    const proportionId =
+        "cmpProportion" + side;
+
+    const timeId =
+        "cmpTime" + side;
+
+    const sampleId =
+        "cmpSample" + side;
+
+
+    const oldSyringe =
+        document
+            .getElementById(syringeId)
+            .value;
+
+
+    fillSelect(
+        syringeId,
+        base.map(
+            r => r.syringe_config
+        ),
+        oldSyringe
+    );
+
+
+    const syringe =
+        document
+            .getElementById(syringeId)
+            .value;
+
+
+    let rows1 =
+        base.filter(
+            function(r){
+
+                return (
+                    !syringe ||
+                    String(r.syringe_config) ===
+                    String(syringe)
+                );
+
+            }
+        );
+
+
+    const oldDevice =
+        document
+            .getElementById(deviceId)
+            .value;
+
+
+    fillSelect(
+        deviceId,
+        rows1.map(
+            r => r.device
+        ),
+        oldDevice
+    );
+
+
+    const device =
+        document
+            .getElementById(deviceId)
+            .value;
+
+
+    let rows2 =
+        rows1.filter(
+            function(r){
+
+                return (
+                    !device ||
+                    String(r.device) ===
+                    String(device)
+                );
+
+            }
+        );
+
+
+    const oldProportion =
+        document
+            .getElementById(proportionId)
+            .value;
+
+
+    fillSelect(
+        proportionId,
+        rows2.map(
+            r => r.proportion
+        ),
+        oldProportion
+    );
+
+
+    const proportion =
+        document
+            .getElementById(proportionId)
+            .value;
+
+
+    let rows3 =
+        rows2.filter(
+            function(r){
+
+                return (
+                    !proportion ||
+                    String(r.proportion) ===
+                    String(proportion)
+                );
+
+            }
+        );
+
+
+    const oldTime =
+        document
+            .getElementById(timeId)
+            .value;
+
+
+    fillSelect(
+        timeId,
+        rows3.map(
+            r => r.collection_time_seconds
+        ),
+        oldTime
+    );
+
+
+    const time =
+        document
+            .getElementById(timeId)
+            .value;
+
+
+    let rows4 =
+        rows3.filter(
+            function(r){
+
+                return (
+                    !time ||
+                    String(r.collection_time_seconds) ===
+                    String(time)
+                );
+
+            }
+        );
+
+
+    const oldSample =
+        document
+            .getElementById(sampleId)
+            .value;
+
+
+    fillSelect(
+        sampleId,
+        rows4.map(
+            r => r.sample
+        ),
+        oldSample
+    );
+
 }
-function loadComparisonOptions(){refreshComparison()}
-function selected(side){const g=id=>document.getElementById(id+side).value;return microscopyRows.find(r=>String(r.concentration)===g("cmpConcentration")&&String(r.syringe_config)===g("cmpSyringe")&&String(r.device)===g("cmpDevice")&&String(r.proportion)===g("cmpProportion")&&String(r.collection_time_seconds)===g("cmpTime")&&String(r.sample)===g("cmpSample"))}
-async function signed(path){const {data,error}=await sb.storage.from("microscopy").createSignedUrl(path,3600);if(error)throw error;return data.signedUrl}
+
+
+function refreshComparison(){
+
+    refreshSide("A");
+
+    refreshSide("B");
+
+}
+
+
+function getSelectedImage(side){
+
+    const concentration =
+        document
+            .getElementById(
+                "cmpConcentration"
+            )
+            .value;
+
+    const syringe =
+        document
+            .getElementById(
+                "cmpSyringe" + side
+            )
+            .value;
+
+    const device =
+        document
+            .getElementById(
+                "cmpDevice" + side
+            )
+            .value;
+
+    const proportion =
+        document
+            .getElementById(
+                "cmpProportion" + side
+            )
+            .value;
+
+    const time =
+        document
+            .getElementById(
+                "cmpTime" + side
+            )
+            .value;
+
+    const sample =
+        document
+            .getElementById(
+                "cmpSample" + side
+            )
+            .value;
+
+
+    return microscopyRows.find(
+        function(row){
+
+            return (
+
+                String(row.concentration) ===
+                String(concentration)
+
+                &&
+
+                String(row.syringe_config) ===
+                String(syringe)
+
+                &&
+
+                String(row.device) ===
+                String(device)
+
+                &&
+
+                String(row.proportion) ===
+                String(proportion)
+
+                &&
+
+                String(row.collection_time_seconds) ===
+                String(time)
+
+                &&
+
+                String(row.sample) ===
+                String(sample)
+
+            );
+
+        }
+    );
+
+}
+
+
+/* ============================================================
+   URL DA IMAGEM
+   ============================================================ */
+
+async function createImageUrl(path){
+
+    const result =
+        await sb
+            .storage
+            .from("microscopy")
+            .createSignedUrl(
+                path,
+                3600
+            );
+
+
+    if(result.error){
+
+        throw result.error;
+
+    }
+
+
+    return result.data.signedUrl;
+
+}
+
+
+/* ============================================================
+   COMPARAR
+   ============================================================ */
+
 async function compareImages(){
-  const a=selected("A"),b=selected("B");
-  if(!document.getElementById("cmpConcentration").value||!a||!b){msg("comparisonMsg","Selecione todos os campos de A e B.");return}
-  try{const [ua,ub]=await Promise.all([signed(a.image_path),signed(b.image_path)]);document.getElementById("imgA").src=ua;document.getElementById("imgB").src=ub;const meta=r=>`<b>Dispositivo:</b> ${esc(r.device)}<br><b>Concentração:</b> ${esc(r.concentration)}<br><b>Seringa:</b> ${esc(r.syringe_config)}<br><b>Proporção:</b> ${esc(r.proportion)}<br><b>Tempo:</b> ${esc(r.collection_time_seconds)} s<br><b>Amostra:</b> ${esc(r.sample)}`;document.getElementById("metaA").innerHTML=meta(a);document.getElementById("metaB").innerHTML=meta(b);document.getElementById("comparisonResult").classList.remove("hidden");document.getElementById("comparisonMsg").innerHTML=""}catch(e){msg("comparisonMsg","Erro ao abrir imagens: "+e.message,"error")}
-}
-function clearComparison(){document.getElementById("comparisonResult").classList.add("hidden");document.getElementById("comparisonMsg").innerHTML=""}
 
-function previewMicImage(){const f=document.getElementById("micFile").files[0],i=document.getElementById("micPreview");if(!f){i.classList.add("hidden");return}i.src=URL.createObjectURL(f);i.classList.remove("hidden")}
+    const concentration =
+        document
+            .getElementById(
+                "cmpConcentration"
+            )
+            .value;
+
+
+    const imageA =
+        getSelectedImage("A");
+
+
+    const imageB =
+        getSelectedImage("B");
+
+
+    if(
+        !concentration ||
+        !imageA ||
+        !imageB
+    ){
+
+        document
+            .getElementById(
+                "comparisonMsg"
+            )
+            .innerHTML =
+                '<div class="alert warn">' +
+                'Selecione todos os campos de A e B.' +
+                '</div>';
+
+        return;
+
+    }
+
+
+    try{
+
+        const urls =
+            await Promise.all([
+
+                createImageUrl(
+                    imageA.image_path
+                ),
+
+                createImageUrl(
+                    imageB.image_path
+                )
+
+            ]);
+
+
+        document
+            .getElementById("imgA")
+            .src =
+                urls[0];
+
+
+        document
+            .getElementById("imgB")
+            .src =
+                urls[1];
+
+
+        document
+            .getElementById("metaA")
+            .innerHTML =
+                buildImageMetadata(
+                    imageA
+                );
+
+
+        document
+            .getElementById("metaB")
+            .innerHTML =
+                buildImageMetadata(
+                    imageB
+                );
+
+
+        document
+            .getElementById(
+                "comparisonResult"
+            )
+            .classList
+            .remove("hidden");
+
+
+        document
+            .getElementById(
+                "comparisonMsg"
+            )
+            .innerHTML = "";
+
+
+    }
+    catch(error){
+
+        console.error(error);
+
+        document
+            .getElementById(
+                "comparisonMsg"
+            )
+            .innerHTML =
+                '<div class="alert error">' +
+                'Erro ao abrir as imagens: ' +
+                escapeHtml(error.message) +
+                '</div>';
+
+    }
+
+}
+
+
+function buildImageMetadata(row){
+
+    return (
+
+        "<b>Dispositivo:</b> " +
+        escapeHtml(row.device) +
+
+        "<br>" +
+
+        "<b>Concentração:</b> " +
+        escapeHtml(row.concentration) +
+
+        "<br>" +
+
+        "<b>Seringa:</b> " +
+        escapeHtml(row.syringe_config) +
+
+        "<br>" +
+
+        "<b>Proporção:</b> " +
+        escapeHtml(row.proportion) +
+
+        "<br>" +
+
+        "<b>Tempo:</b> " +
+        escapeHtml(
+            row.collection_time_seconds
+        ) +
+        " s" +
+
+        "<br>" +
+
+        "<b>Amostra:</b> " +
+        escapeHtml(row.sample)
+
+    );
+
+}
+
+
+function clearComparison(){
+
+    document
+        .getElementById(
+            "comparisonResult"
+        )
+        .classList
+        .add("hidden");
+
+
+    document
+        .getElementById(
+            "comparisonMsg"
+        )
+        .innerHTML = "";
+
+}
+
+
+/* ============================================================
+   PREVIEW DA IMAGEM
+   ============================================================ */
+
+function previewMicImage(){
+
+    const file =
+        document
+            .getElementById("micFile")
+            .files[0];
+
+
+    const preview =
+        document
+            .getElementById("micPreview");
+
+
+    if(!file){
+
+        preview
+            .classList
+            .add("hidden");
+
+        return;
+
+    }
+
+
+    preview.src =
+        URL.createObjectURL(file);
+
+
+    preview
+        .classList
+        .remove("hidden");
+
+}
+
+
+/* ============================================================
+   SALVAR MICROSCOPIA
+   ============================================================ */
+
 async function saveMicroscopy(){
-  if(currentRole!=="admin"){msg("micMsg","Somente o administrador pode cadastrar imagens.","error");return}
-  const f=document.getElementById("micFile").files[0],p={device:micDevice.value,concentration:micConcentration.value,syringe_config:micSyringe.value,proportion:micProportion.value.trim(),collection_time_seconds:Number(micTime.value),sample:micSample.value.trim()};
-  if(!f||!p.proportion||!Number.isFinite(p.collection_time_seconds)||!p.sample){msg("micMsg","Preencha todos os campos e selecione uma imagem.");return}
-  try{msg("micMsg","Enviando imagem...");const path=`${Date.now()}_${Math.random().toString(36).slice(2,8)}_${f.name.replace(/[^a-zA-Z0-9._-]/g,"_")}`;const u=await sb.storage.from("microscopy").upload(path,f,{upsert:false,contentType:f.type||"image/jpeg"});if(u.error)throw u.error;p.image_path=path;const ins=await sb.from("microscopy_images").insert(p);if(ins.error){await sb.storage.from("microscopy").remove([path]);throw ins.error}msg("micMsg","Imagem cadastrada com sucesso.","ok");document.getElementById("micFile").value="";document.getElementById("micPreview").classList.add("hidden");document.getElementById("micProportion").value="";document.getElementById("micTime").value="";document.getElementById("micSample").value="";await loadAllData()}catch(e){msg("micMsg","Erro ao salvar imagem: "+e.message,"error")}
+
+    if(currentRole !== "admin"){
+
+        showAdminError(
+            "micMsg",
+            "Somente o administrador pode cadastrar imagens."
+        );
+
+        return;
+
+    }
+
+
+    const file =
+        document
+            .getElementById("micFile")
+            .files[0];
+
+
+    const record = {
+
+        device:
+            document
+                .getElementById("micDevice")
+                .value,
+
+        concentration:
+            document
+                .getElementById("micConcentration")
+                .value,
+
+        syringe_config:
+            document
+                .getElementById("micSyringe")
+                .value,
+
+        proportion:
+            document
+                .getElementById("micProportion")
+                .value
+                .trim(),
+
+        collection_time_seconds:
+            Number(
+                document
+                    .getElementById("micTime")
+                    .value
+            ),
+
+        sample:
+            document
+                .getElementById("micSample")
+                .value
+                .trim()
+
+    };
+
+
+    if(
+        !file ||
+        !record.proportion ||
+        !record.sample ||
+        !Number.isFinite(
+            record.collection_time_seconds
+        )
+    ){
+
+        showAdminError(
+            "micMsg",
+            "Preencha todos os campos e selecione uma imagem."
+        );
+
+        return;
+
+    }
+
+
+    try{
+
+        showAdminInfo(
+            "micMsg",
+            "Enviando imagem..."
+        );
+
+
+        const safeName =
+            file.name
+                .replace(
+                    /[^a-zA-Z0-9._-]/g,
+                    "_"
+                );
+
+
+        const path =
+            Date.now() +
+            "_" +
+            Math.random()
+                .toString(36)
+                .slice(2,8) +
+            "_" +
+            safeName;
+
+
+        const upload =
+            await sb
+                .storage
+                .from("microscopy")
+                .upload(
+                    path,
+                    file,
+                    {
+                        upsert:false,
+                        contentType:
+                            file.type ||
+                            "image/jpeg"
+                    }
+                );
+
+
+        if(upload.error){
+
+            throw upload.error;
+
+        }
+
+
+        record.image_path =
+            path;
+
+
+        const insert =
+            await sb
+                .from("microscopy_images")
+                .insert(record);
+
+
+        if(insert.error){
+
+            await sb
+                .storage
+                .from("microscopy")
+                .remove([path]);
+
+            throw insert.error;
+
+        }
+
+
+        showAdminSuccess(
+            "micMsg",
+            "Imagem cadastrada com sucesso."
+        );
+
+
+        document
+            .getElementById("micFile")
+            .value = "";
+
+
+        document
+            .getElementById("micPreview")
+            .classList
+            .add("hidden");
+
+
+        document
+            .getElementById("micProportion")
+            .value = "";
+
+
+        document
+            .getElementById("micTime")
+            .value = "";
+
+
+        document
+            .getElementById("micSample")
+            .value = "";
+
+
+        await loadAllData();
+
+    }
+    catch(error){
+
+        console.error(error);
+
+        showAdminError(
+            "micMsg",
+            "Erro ao salvar imagem: " +
+            error.message
+        );
+
+    }
+
 }
 
-function loadHalfFilters(){const ids=["halfFilterConcentration","halfFilterDevice","halfFilterSyringe","halfFilterProportion","halfFilterLab","halfFilterOperator"],fields=["concentration","device","syringe_config","proportion","laboratory","operator"];ids.forEach((id,i)=>{const e=document.getElementById(id),old=e.value;opts(id,halfRows.map(r=>r[fields[i]]),old)})}
-function filteredHalfRows(){const g=id=>document.getElementById(id).value;return halfRows.filter(r=>(!g("halfFilterConcentration")||String(r.concentration)===g("halfFilterConcentration"))&&(!g("halfFilterDevice")||String(r.device)===g("halfFilterDevice"))&&(!g("halfFilterSyringe")||String(r.syringe_config)===g("halfFilterSyringe"))&&(!g("halfFilterProportion")||String(r.proportion)===g("halfFilterProportion"))&&(!g("halfFilterLab")||String(r.laboratory||"")===g("halfFilterLab"))&&(!g("halfFilterOperator")||String(r.operator)===g("halfFilterOperator")))}
-function groupRows(rows){const m=new Map();rows.forEach(r=>{const k=[r.concentration,r.device,r.syringe_config,r.proportion,r.laboratory||"",r.operator].join("||");if(!m.has(k))m.set(k,{concentration:r.concentration,device:r.device,syringe_config:r.syringe_config,proportion:r.proportion,laboratory:r.laboratory||"",operator:r.operator,values:[]});m.get(k).values.push(Number(r.half_life_seconds))});return [...m.values()].map(g=>({...g,n:g.values.length,mean:g.values.reduce((a,b)=>a+b,0)/g.values.length}))}
-function renderHalfLife(){const rows=filteredHalfRows(),groups=groupRows(rows),avg=rows.length?rows.reduce((a,r)=>a+Number(r.half_life_seconds),0)/rows.length:0,min=rows.length?Math.min(...rows.map(r=>Number(r.half_life_seconds))):0,max=rows.length?Math.max(...rows.map(r=>Number(r.half_life_seconds))):0;document.getElementById("halfKpis").innerHTML=`<div class="kpi"><small>Medições</small><strong>${rows.length}</strong></div><div class="kpi"><small>Média geral</small><strong>${avg.toFixed(1)} s</strong></div><div class="kpi"><small>Faixa observada</small><strong>${min.toFixed(1)}–${max.toFixed(1)} s</strong></div>`;document.getElementById("halfSummaryBody").innerHTML=groups.map(g=>`<tr><td>${esc(g.concentration)}</td><td>${esc(g.device)}</td><td>${esc(g.syringe_config)}</td><td>${esc(g.proportion)}</td><td>${esc(g.laboratory)}</td><td>${esc(g.operator)}</td><td>${g.n}</td><td><b>${g.mean.toFixed(2)}</b></td></tr>`).join("")||'<tr><td colspan="8">Nenhum dado encontrado.</td></tr>';document.getElementById("halfRawBody").innerHTML=rows.map(r=>`<tr><td>${r.created_at?new Date(r.created_at).toLocaleString("pt-BR"):""}</td><td>${esc(r.device)}</td><td>${esc(r.concentration)}</td><td>${esc(r.syringe_config)}</td><td>${esc(r.proportion)}</td><td>${Number(r.half_life_seconds).toFixed(2)}</td><td>${esc(r.operator)}</td><td>${esc(r.laboratory||"")}</td></tr>`).join("")||'<tr><td colspan="8">Nenhum dado encontrado.</td></tr>';drawChart(groups)}
-function drawChart(groups){if(halfChart)halfChart.destroy();halfChart=new Chart(document.getElementById("halfChart"),{type:"bar",data:{labels:groups.map(g=>`${g.device} | ${g.concentration} | ${g.proportion}`),datasets:[{label:"Meia-vida média (s)",data:groups.map(g=>g.mean)}]},options:{responsive:true,maintainAspectRatio:false,scales:{y:{beginAtZero:true,title:{display:true,text:"Segundos"}}}}})}
-function resetHalfFilters(){["halfFilterConcentration","halfFilterDevice","halfFilterSyringe","halfFilterProportion","halfFilterLab","halfFilterOperator"].forEach(id=>document.getElementById(id).value="");renderHalfLife()}
-async function saveHalfLife(){if(currentRole!=="admin"){msg("hlMsg","Somente o administrador pode cadastrar medições.","error");return}const p={device:hlDevice.value,concentration:hlConcentration.value,syringe_config:hlSyringe.value,proportion:hlProportion.value.trim(),half_life_seconds:Number(hlSeconds.value),operator:hlOperator.value.trim(),laboratory:hlLab.value.trim()};if(!p.proportion||!Number.isFinite(p.half_life_seconds)||!p.operator){msg("hlMsg","Preencha proporção, meia-vida e operador.");return}const {error}=await sb.from("half_life_tests").insert(p);if(error){msg("hlMsg","Erro ao cadastrar: "+error.message,"error");return}msg("hlMsg","Medição cadastrada com sucesso.","ok");hlProportion.value="";hlSeconds.value="";hlOperator.value="";hlLab.value="";await loadAllData()}
-function norm(k){return String(k||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]/g,"")}
-function col(o,n){const ks=Object.keys(o),w=n.map(norm),k=ks.find(x=>w.includes(norm(x)));return k?o[k]:""}
-async function importHalfExcel(e){if(currentRole!=="admin"){msg("hlMsg","Somente o administrador pode importar.","error");return}const f=e.target.files[0];if(!f)return;try{const wb=XLSX.read(await f.arrayBuffer(),{type:"array"}),ws=wb.Sheets[wb.SheetNames[wb.SheetNames.length-1]],rows=XLSX.utils.sheet_to_json(ws,{defval:""}),rec=rows.map(r=>({device:String(col(r,["dispositivo","device","equipamento"])).trim(),concentration:String(col(r,["concentracao","concentration"])).trim(),syringe_config:String(col(r,["seringa","syringe","syringeconfig","configuracaoseringa"])).trim(),proportion:String(col(r,["proporcao","proportion","ratio"])).trim(),half_life_seconds:Number(col(r,["meiavida","half life","halflife","halflifeseconds"])),operator:String(col(r,["operador","operator"])).trim(),laboratory:String(col(r,["laboratorio","laboratory","lab"])).trim()})).filter(r=>r.device&&r.concentration&&r.proportion&&Number.isFinite(r.half_life_seconds)&&r.operator);if(!rec.length)throw Error("Nenhuma linha válida foi encontrada.");const {error}=await sb.from("half_life_tests").insert(rec);if(error)throw error;msg("hlMsg",`${rec.length} medições importadas com sucesso.`,"ok");e.target.value="";await loadAllData()}catch(x){msg("hlMsg","Erro na importação: "+x.message,"error")}}
-function exportHalfExcel(){const rows=filteredHalfRows(),sum=groupRows(rows).map(g=>({"Concentração":g.concentration,"Dispositivo":g.device,"Seringa":g.syringe_config,"Proporção":g.proportion,"Laboratório":g.laboratory,"Operador":g.operator,"N":g.n,"Média (s)":Number(g.mean.toFixed(2))})),raw=rows.map(r=>({"Data":r.created_at,"Dispositivo":r.device,"Concentração":r.concentration,"Seringa":r.syringe_config,"Proporção":r.proportion,"Meia-vida (s)":r.half_life_seconds,"Operador":r.operator,"Laboratório":r.laboratory||""})),wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(sum),"Resumo");XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(raw),"Dados");XLSX.writeFile(wb,"MSB_Biblioteca_Meia_Vida.xlsx")}
-function exportHalfPDF(){const {jsPDF}=window.jspdf,doc=new jsPDF({orientation:"landscape"}),g=groupRows(filteredHalfRows());doc.setFontSize(16);doc.text("Biblioteca MSB - Resultados de Meia-vida",14,15);doc.autoTable({startY:24,head:[["Concentração","Dispositivo","Seringa","Proporção","Laboratório","Operador","N","Média (s)"]],body:g.map(x=>[x.concentration,x.device,x.syringe_config,x.proportion,x.laboratory,x.operator,x.n,x.mean.toFixed(2)]),styles:{fontSize:8}});doc.save("MSB_Biblioteca_Meia_Vida.pdf")}
+
+/* ============================================================
+   MEIA VIDA - FILTROS
+   ============================================================ */
+
+function loadHalfFilters(){
+
+    const filters = [
+
+        [
+            "halfFilterConcentration",
+            "concentration"
+        ],
+
+        [
+            "halfFilterDevice",
+            "device"
+        ],
+
+        [
+            "halfFilterSyringe",
+            "syringe_config"
+        ],
+
+        [
+            "halfFilterProportion",
+            "proportion"
+        ],
+
+        [
+            "halfFilterLab",
+            "laboratory"
+        ],
+
+        [
+            "halfFilterOperator",
+            "operator"
+        ]
+
+    ];
+
+
+    filters.forEach(
+        function(item){
+
+            const id = item[0];
+
+            const field = item[1];
+
+            const old =
+                document
+                    .getElementById(id)
+                    .value;
+
+
+            fillSelect(
+                id,
+                halfRows.map(
+                    r => r[field]
+                ),
+                old
+            );
+
+        }
+    );
+
+}
+
+
+function filteredHalfRows(){
+
+    const get =
+        id =>
+            document
+                .getElementById(id)
+                .value;
+
+
+    return halfRows.filter(
+        function(row){
+
+            return (
+
+                (
+                    !get(
+                        "halfFilterConcentration"
+                    )
+
+                    ||
+
+                    String(row.concentration) ===
+                    get(
+                        "halfFilterConcentration"
+                    )
+                )
+
+                &&
+
+                (
+                    !get(
+                        "halfFilterDevice"
+                    )
+
+                    ||
+
+                    String(row.device) ===
+                    get(
+                        "halfFilterDevice"
+                    )
+                )
+
+                &&
+
+                (
+                    !get(
+                        "halfFilterSyringe"
+                    )
+
+                    ||
+
+                    String(row.syringe_config) ===
+                    get(
+                        "halfFilterSyringe"
+                    )
+                )
+
+                &&
+
+                (
+                    !get(
+                        "halfFilterProportion"
+                    )
+
+                    ||
+
+                    String(row.proportion) ===
+                    get(
+                        "halfFilterProportion"
+                    )
+                )
+
+                &&
+
+                (
+                    !get(
+                        "halfFilterLab"
+                    )
+
+                    ||
+
+                    String(
+                        row.laboratory || ""
+                    ) ===
+                    get(
+                        "halfFilterLab"
+                    )
+                )
+
+                &&
+
+                (
+                    !get(
+                        "halfFilterOperator"
+                    )
+
+                    ||
+
+                    String(row.operator) ===
+                    get(
+                        "halfFilterOperator"
+                    )
+                )
+
+            );
+
+        }
+    );
+
+}
+
+
+/* ============================================================
+   AGRUPAMENTO
+   ============================================================ */
+
+function groupHalfRows(rows){
+
+    const groups =
+        new Map();
+
+
+    rows.forEach(
+        function(row){
+
+            const key = [
+
+                row.concentration,
+                row.device,
+                row.syringe_config,
+                row.proportion,
+                row.laboratory || "",
+                row.operator
+
+            ].join("||");
+
+
+            if(!groups.has(key)){
+
+                groups.set(
+                    key,
+                    {
+
+                        concentration:
+                            row.concentration,
+
+                        device:
+                            row.device,
+
+                        syringe_config:
+                            row.syringe_config,
+
+                        proportion:
+                            row.proportion,
+
+                        laboratory:
+                            row.laboratory || "",
+
+                        operator:
+                            row.operator,
+
+                        values:[]
+
+                    }
+                );
+
+            }
+
+
+            groups
+                .get(key)
+                .values
+                .push(
+                    Number(
+                        row.half_life_seconds
+                    )
+                );
+
+        }
+    );
+
+
+    return [
+        ...groups.values()
+    ].map(
+        function(group){
+
+            const sum =
+                group.values.reduce(
+                    function(a,b){
+
+                        return a + b;
+
+                    },
+                    0
+                );
+
+
+            return {
+
+                ...group,
+
+                n:
+                    group.values.length,
+
+                mean:
+                    sum /
+                    group.values.length
+
+            };
+
+        }
+    );
+
+}
+
+
+/* ============================================================
+   RENDER MEIA VIDA
+   ============================================================ */
+
+function renderHalfLife(){
+
+    const rows =
+        filteredHalfRows();
+
+
+    const groups =
+        groupHalfRows(rows);
+
+
+    let average = 0;
+
+    let min = 0;
+
+    let max = 0;
+
+
+    if(rows.length){
+
+        average =
+            rows.reduce(
+                function(sum,row){
+
+                    return (
+                        sum +
+                        Number(
+                            row.half_life_seconds
+                        )
+                    );
+
+                },
+                0
+            ) / rows.length;
+
+
+        min =
+            Math.min(
+                ...rows.map(
+                    r =>
+                        Number(
+                            r.half_life_seconds
+                        )
+                )
+            );
+
+
+        max =
+            Math.max(
+                ...rows.map(
+                    r =>
+                        Number(
+                            r.half_life_seconds
+                        )
+                )
+            );
+
+    }
+
+
+    document
+        .getElementById("halfKpis")
+        .innerHTML =
+
+        '<div class="kpi">' +
+            '<small>Medições</small>' +
+            '<strong>' +
+                rows.length +
+            '</strong>' +
+        '</div>' +
+
+        '<div class="kpi">' +
+            '<small>Média geral</small>' +
+            '<strong>' +
+                average.toFixed(1) +
+                ' s' +
+            '</strong>' +
+        '</div>' +
+
+        '<div class="kpi">' +
+            '<small>Faixa observada</small>' +
+            '<strong>' +
+                min.toFixed(1) +
+                ' – ' +
+                max.toFixed(1) +
+                ' s' +
+            '</strong>' +
+        '</div>';
+
+
+    document
+        .getElementById("halfSummaryBody")
+        .innerHTML =
+
+
+        groups
+            .map(
+                function(group){
+
+                    return (
+
+                        '<tr>' +
+
+                        '<td>' +
+                            escapeHtml(
+                                group.concentration
+                            ) +
+                        '</td>' +
+
+                        '<td>' +
+                            escapeHtml(
+                                group.device
+                            ) +
+                        '</td>' +
+
+                        '<td>' +
+                            escapeHtml(
+                                group.syringe_config
+                            ) +
+                        '</td>' +
+
+                        '<td>' +
+                            escapeHtml(
+                                group.proportion
+                            ) +
+                        '</td>' +
+
+                        '<td>' +
+                            escapeHtml(
+                                group.laboratory
+                            ) +
+                        '</td>' +
+
+                        '<td>' +
+                            escapeHtml(
+                                group.operator
+                            ) +
+                        '</td>' +
+
+                        '<td>' +
+                            group.n +
+                        '</td>' +
+
+                        '<td><b>' +
+                            group.mean.toFixed(2) +
+                        '</b></td>' +
+
+                        '</tr>'
+
+                    );
+
+                }
+            )
+            .join("")
+
+        ||
+
+        '<tr>' +
+            '<td colspan="8">' +
+                'Nenhum dado encontrado.' +
+            '</td>' +
+        '</tr>';
+
+
+    document
+        .getElementById("halfRawBody")
+        .innerHTML =
+
+        rows
+            .map(
+                function(row){
+
+                    return (
+
+                        '<tr>' +
+
+                        '<td>' +
+                            (
+                                row.created_at
+                                ?
+                                new Date(
+                                    row.created_at
+                                ).toLocaleString(
+                                    "pt-BR"
+                                )
+                                :
+                                ""
+                            ) +
+                        '</td>' +
+
+                        '<td>' +
+                            escapeHtml(
+                                row.device
+                            ) +
+                        '</td>' +
+
+                        '<td>' +
+                            escapeHtml(
+                                row.concentration
+                            ) +
+                        '</td>' +
+
+                        '<td>' +
+                            escapeHtml(
+                                row.syringe_config
+                            ) +
+                        '</td>' +
+
+                        '<td>' +
+                            escapeHtml(
+                                row.proportion
+                            ) +
+                        '</td>' +
+
+                        '<td>' +
+                            Number(
+                                row.half_life_seconds
+                            ).toFixed(2) +
+                        '</td>' +
+
+                        '<td>' +
+                            escapeHtml(
+                                row.operator
+                            ) +
+                        '</td>' +
+
+                        '<td>' +
+                            escapeHtml(
+                                row.laboratory || ""
+                            ) +
+                        '</td>' +
+
+                        '</tr>'
+
+                    );
+
+                }
+            )
+            .join("")
+
+        ||
+
+        '<tr>' +
+            '<td colspan="8">' +
+                'Nenhum dado encontrado.' +
+            '</td>' +
+        '</tr>';
+
+
+    drawHalfChart(groups);
+
+}
+
+
+/* ============================================================
+   GRÁFICO
+   ============================================================ */
+
+function drawHalfChart(groups){
+
+    const canvas =
+        document
+            .getElementById(
+                "halfChart"
+            );
+
+
+    if(!canvas){
+
+        return;
+
+    }
+
+
+    if(halfChart){
+
+        halfChart.destroy();
+
+    }
+
+
+    halfChart =
+        new Chart(
+            canvas,
+            {
+
+                type:"bar",
+
+                data:{
+
+                    labels:
+                        groups.map(
+                            function(group){
+
+                                return (
+                                    group.device +
+                                    " | " +
+                                    group.concentration +
+                                    " | " +
+                                    group.proportion
+                                );
+
+                            }
+                        ),
+
+                    datasets:[
+
+                        {
+
+                            label:
+                                "Meia-vida média (s)",
+
+                            data:
+                                groups.map(
+                                    g =>
+                                        g.mean
+                                )
+
+                        }
+
+                    ]
+
+                },
+
+                options:{
+
+                    responsive:true,
+
+                    maintainAspectRatio:false,
+
+                    scales:{
+
+                        y:{
+
+                            beginAtZero:true,
+
+                            title:{
+
+                                display:true,
+
+                                text:
+                                    "Segundos"
+
+                            }
+
+                        }
+
+                    }
+
+                }
+
+            }
+        );
+
+}
+
+
+/* ============================================================
+   LIMPAR FILTROS
+   ============================================================ */
+
+function resetHalfFilters(){
+
+    [
+
+        "halfFilterConcentration",
+        "halfFilterDevice",
+        "halfFilterSyringe",
+        "halfFilterProportion",
+        "halfFilterLab",
+        "halfFilterOperator"
+
+    ]
+    .forEach(
+        function(id){
+
+            document
+                .getElementById(id)
+                .value = "";
+
+        }
+    );
+
+
+    renderHalfLife();
+
+}
+
+
+/* ============================================================
+   CADASTRAR MEIA VIDA
+   ============================================================ */
+
+async function saveHalfLife(){
+
+    if(currentRole !== "admin"){
+
+        showAdminError(
+            "hlMsg",
+            "Somente o administrador pode cadastrar medições."
+        );
+
+        return;
+
+    }
+
+
+    const record = {
+
+        device:
+            document
+                .getElementById("hlDevice")
+                .value,
+
+        concentration:
+            document
+                .getElementById("hlConcentration")
+                .value,
+
+        syringe_config:
+            document
+                .getElementById("hlSyringe")
+                .value,
+
+        proportion:
+            document
+                .getElementById("hlProportion")
+                .value
+                .trim(),
+
+        half_life_seconds:
+            Number(
+                document
+                    .getElementById("hlSeconds")
+                    .value
+            ),
+
+        operator:
+            document
+                .getElementById("hlOperator")
+                .value
+                .trim(),
+
+        laboratory:
+            document
+                .getElementById("hlLab")
+                .value
+                .trim()
+
+    };
+
+
+    if(
+        !record.proportion ||
+        !record.operator ||
+        !Number.isFinite(
+            record.half_life_seconds
+        )
+    ){
+
+        showAdminError(
+            "hlMsg",
+            "Preencha proporção, meia-vida e operador."
+        );
+
+        return;
+
+    }
+
+
+    try{
+
+        const result =
+            await sb
+                .from("half_life_tests")
+                .insert(record);
+
+
+        if(result.error){
+
+            throw result.error;
+
+        }
+
+
+        showAdminSuccess(
+            "hlMsg",
+            "Medição cadastrada com sucesso."
+        );
+
+
+        document
+            .getElementById(
+                "hlProportion"
+            )
+            .value = "";
+
+
+        document
+            .getElementById(
+                "hlSeconds"
+            )
+            .value = "";
+
+
+        document
+            .getElementById(
+                "hlOperator"
+            )
+            .value = "";
+
+
+        document
+            .getElementById(
+                "hlLab"
+            )
+            .value = "";
+
+
+        await loadAllData();
+
+    }
+    catch(error){
+
+        console.error(error);
+
+        showAdminError(
+            "hlMsg",
+            "Erro ao cadastrar: " +
+            error.message
+        );
+
+    }
+
+}
+
+
+/* ============================================================
+   IMPORTAR EXCEL
+   ============================================================ */
+
+function normalizeColumn(value){
+
+    return String(value || "")
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(
+            /[\u0300-\u036f]/g,
+            ""
+        )
+        .replace(
+            /[^a-z0-9]/g,
+            ""
+        );
+
+}
+
+
+function getExcelColumn(row,names){
+
+    const keys =
+        Object.keys(row);
+
+
+    const normalizedNames =
+        names.map(
+            normalizeColumn
+        );
+
+
+    const found =
+        keys.find(
+            function(key){
+
+                return normalizedNames.includes(
+                    normalizeColumn(key)
+                );
+
+            }
+        );
+
+
+    return found
+        ? row[found]
+        : "";
+
+}
+
+
+async function importHalfExcel(event){
+
+    if(currentRole !== "admin"){
+
+        showAdminError(
+            "hlMsg",
+            "Somente o administrador pode importar."
+        );
+
+        return;
+
+    }
+
+
+    const file =
+        event.target.files[0];
+
+
+    if(!file){
+
+        return;
+
+    }
+
+
+    try{
+
+        const buffer =
+            await file.arrayBuffer();
+
+
+        const workbook =
+            XLSX.read(
+                buffer,
+                {
+                    type:"array"
+                }
+            );
+
+
+        const lastSheetName =
+            workbook
+                .SheetNames[
+                    workbook.SheetNames.length - 1
+                ];
+
+
+        const sheet =
+            workbook.Sheets[
+                lastSheetName
+            ];
+
+
+        const rows =
+            XLSX.utils.sheet_to_json(
+                sheet,
+                {
+                    defval:""
+                }
+            );
+
+
+        const records =
+            rows
+                .map(
+                    function(row){
+
+                        return {
+
+                            device:
+                                String(
+                                    getExcelColumn(
+                                        row,
+                                        [
+                                            "dispositivo",
+                                            "device",
+                                            "equipamento"
+                                        ]
+                                    )
+                                ).trim(),
+
+                            concentration:
+                                String(
+                                    getExcelColumn(
+                                        row,
+                                        [
+                                            "concentracao",
+                                            "concentration"
+                                        ]
+                                    )
+                                ).trim(),
+
+                            syringe_config:
+                                String(
+                                    getExcelColumn(
+                                        row,
+                                        [
+                                            "seringa",
+                                            "syringe",
+                                            "syringeconfig",
+                                            "configuracaoseringa"
+                                        ]
+                                    )
+                                ).trim(),
+
+                            proportion:
+                                String(
+                                    getExcelColumn(
+                                        row,
+                                        [
+                                            "proporcao",
+                                            "proportion",
+                                            "ratio"
+                                        ]
+                                    )
+                                ).trim(),
+
+                            half_life_seconds:
+                                Number(
+                                    getExcelColumn(
+                                        row,
+                                        [
+                                            "meiavida",
+                                            "half life",
+                                            "halflife",
+                                            "halflifeseconds"
+                                        ]
+                                    )
+                                ),
+
+                            operator:
+                                String(
+                                    getExcelColumn(
+                                        row,
+                                        [
+                                            "operador",
+                                            "operator"
+                                        ]
+                                    )
+                                ).trim(),
+
+                            laboratory:
+                                String(
+                                    getExcelColumn(
+                                        row,
+                                        [
+                                            "laboratorio",
+                                            "laboratory",
+                                            "lab"
+                                        ]
+                                    )
+                                ).trim()
+
+                        };
+
+                    }
+                )
+                .filter(
+                    function(row){
+
+                        return (
+
+                            row.device &&
+
+                            row.concentration &&
+
+                            row.proportion &&
+
+                            row.operator &&
+
+                            Number.isFinite(
+                                row.half_life_seconds
+                            )
+
+                        );
+
+                    }
+                );
+
+
+        if(!records.length){
+
+            throw new Error(
+                "Nenhuma linha válida foi encontrada."
+            );
+
+        }
+
+
+        const result =
+            await sb
+                .from("half_life_tests")
+                .insert(records);
+
+
+        if(result.error){
+
+            throw result.error;
+
+        }
+
+
+        showAdminSuccess(
+            "hlMsg",
+            records.length +
+            " medições importadas com sucesso."
+        );
+
+
+        event.target.value = "";
+
+
+        await loadAllData();
+
+    }
+    catch(error){
+
+        console.error(error);
+
+        showAdminError(
+            "hlMsg",
+            "Erro na importação: " +
+            error.message
+        );
+
+    }
+
+}
+
+
+/* ============================================================
+   EXPORTAR EXCEL
+   ============================================================ */
+
+function exportHalfExcel(){
+
+    const rows =
+        filteredHalfRows();
+
+
+    const summary =
+        groupHalfRows(rows)
+            .map(
+                function(group){
+
+                    return {
+
+                        "Concentração":
+                            group.concentration,
+
+                        "Dispositivo":
+                            group.device,
+
+                        "Seringa":
+                            group.syringe_config,
+
+                        "Proporção":
+                            group.proportion,
+
+                        "Laboratório":
+                            group.laboratory,
+
+                        "Operador":
+                            group.operator,
+
+                        "N":
+                            group.n,
+
+                        "Média (s)":
+                            Number(
+                                group.mean.toFixed(2)
+                            )
+
+                    };
+
+                }
+            );
+
+
+    const raw =
+        rows.map(
+            function(row){
+
+                return {
+
+                    "Data":
+                        row.created_at,
+
+                    "Dispositivo":
+                        row.device,
+
+                    "Concentração":
+                        row.concentration,
+
+                    "Seringa":
+                        row.syringe_config,
+
+                    "Proporção":
+                        row.proportion,
+
+                    "Meia-vida (s)":
+                        row.half_life_seconds,
+
+                    "Operador":
+                        row.operator,
+
+                    "Laboratório":
+                        row.laboratory || ""
+
+                };
+
+            }
+        );
+
+
+    const workbook =
+        XLSX.utils.book_new();
+
+
+    XLSX.utils.book_append_sheet(
+        workbook,
+        XLSX.utils.json_to_sheet(
+            summary
+        ),
+        "Resumo"
+    );
+
+
+    XLSX.utils.book_append_sheet(
+        workbook,
+        XLSX.utils.json_to_sheet(
+            raw
+        ),
+        "Dados"
+    );
+
+
+    XLSX.writeFile(
+        workbook,
+        "MSB_Biblioteca_Meia_Vida.xlsx"
+    );
+
+}
+
+
+/* ============================================================
+   EXPORTAR PDF
+   ============================================================ */
+
+function exportHalfPDF(){
+
+    const jsPDF =
+        window.jspdf.jsPDF;
+
+
+    const doc =
+        new jsPDF({
+            orientation:"landscape"
+        });
+
+
+    const groups =
+        groupHalfRows(
+            filteredHalfRows()
+        );
+
+
+    doc.setFontSize(16);
+
+
+    doc.text(
+        "Biblioteca MSB - Resultados de Meia-vida",
+        14,
+        15
+    );
+
+
+    doc.autoTable({
+
+        startY:24,
+
+        head:[[
+
+            "Concentração",
+            "Dispositivo",
+            "Seringa",
+            "Proporção",
+            "Laboratório",
+            "Operador",
+            "N",
+            "Média (s)"
+
+        ]],
+
+        body:
+            groups.map(
+                function(group){
+
+                    return [
+
+                        group.concentration,
+                        group.device,
+                        group.syringe_config,
+                        group.proportion,
+                        group.laboratory,
+                        group.operator,
+                        group.n,
+                        group.mean.toFixed(2)
+
+                    ];
+
+                }
+            ),
+
+        styles:{
+            fontSize:8
+        }
+
+    });
+
+
+    doc.save(
+        "MSB_Biblioteca_Meia_Vida.pdf"
+    );
+
+}
+
+
+/* ============================================================
+   MENSAGENS ADMIN
+   ============================================================ */
+
+function showAdminError(id,text){
+
+    document
+        .getElementById(id)
+        .innerHTML =
+            '<div class="alert error">' +
+            escapeHtml(text) +
+            '</div>';
+
+}
+
+
+function showAdminInfo(id,text){
+
+    document
+        .getElementById(id)
+        .innerHTML =
+            '<div class="alert warn">' +
+            escapeHtml(text) +
+            '</div>';
+
+}
+
+
+function showAdminSuccess(id,text){
+
+    document
+        .getElementById(id)
+        .innerHTML =
+            '<div class="alert ok">' +
+            escapeHtml(text) +
+            '</div>';
+
+}
+
 </script>
+
 </body>
 </html>
