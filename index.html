@@ -1,287 +1,4015 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>MSB | Biblioteca Científica</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.3/dist/jspdf.plugin.autotable.min.js"></script>
-<style>
-:root{--navy:#07324a;--blue:#0b6688;--light:#eef6f8;--line:#d8e3e7;--text:#19323d;--danger:#a33a3a;--ok:#2e7d5b}
-*{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;color:var(--text);background:#f6f9fa}
-header{background:white;border-bottom:1px solid var(--line);padding:14px 28px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10}
-.logo{font-weight:800;font-size:27px;color:#07506f;letter-spacing:-1px}.logo span{font-size:12px;display:block;color:#58727d;letter-spacing:1px}.msb-logo{width:230px;height:auto;display:block}.login .msb-logo{width:260px;margin-bottom:18px}
-main{max-width:1250px;margin:28px auto;padding:0 18px}.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:20px;margin-bottom:18px;box-shadow:0 5px 20px #1232 0 0 0}
-h1,h2,h3{color:var(--navy);margin-top:0}.muted{color:#66808a;font-size:13px}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
-label{font-size:12px;font-weight:700;color:#48636e;display:block;margin-bottom:5px}input,select,button,textarea{font:inherit}input,select{width:100%;padding:11px;border:1px solid #bfd0d6;border-radius:9px;background:#fff}button{border:0;border-radius:9px;padding:11px 15px;background:var(--blue);color:#fff;font-weight:700;cursor:pointer}button.secondary{background:#e9f1f4;color:var(--navy)}button.danger{background:var(--danger)}button:disabled{opacity:.5;cursor:not-allowed}
-.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:15px}.tabs{display:flex;gap:8px;margin-bottom:18px}.tab{background:#e8f1f4;color:var(--navy)}.tab.active{background:var(--navy);color:white}
-.login{max-width:430px;margin:70px auto}.login .logo{font-size:38px;margin-bottom:8px}.hidden{display:none!important}.status{padding:10px;border-radius:9px;background:#edf6f2;color:#216246;margin-top:10px;font-size:13px}.error{background:#fff0f0;color:#8d3030}
-.compare{display:grid;grid-template-columns:1fr 1fr;gap:18px}.pane{border:1px solid var(--line);border-radius:13px;padding:15px;background:#fbfdfe}.pane img{width:100%;height:430px;object-fit:contain;background:#101820;border-radius:10px;margin-top:12px}
-table{width:100%;border-collapse:collapse;font-size:13px}th,td{border-bottom:1px solid var(--line);padding:9px;text-align:left}th{background:#f1f6f8;color:var(--navy)}
-.metric{font-size:27px;font-weight:800;color:var(--navy)}.metric small{font-size:12px;font-weight:400;color:#67808a}
-#chartWrap{height:430px}.note{background:#f2f7f8;border-left:4px solid var(--blue);padding:12px;border-radius:7px;font-size:13px}
-@media(max-width:900px){.grid{grid-template-columns:1fr 1fr}.compare,.grid2{grid-template-columns:1fr}}@media(max-width:560px){.grid{grid-template-columns:1fr}}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>MSB | Biblioteca</title>
+
+  <!-- =========================================================
+       BIBLIOTECAS EXTERNAS
+       ========================================================= -->
+
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- Excel -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+  <!-- Gráficos -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+
+  <!-- PDF -->
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.3/dist/jspdf.plugin.autotable.min.js"></script>
+
+
+  <!-- =========================================================
+       ESTILO
+       ========================================================= -->
+
+  <style>
+
+    :root {
+      --azul-msb: #087095;
+      --azul-escuro: #073c55;
+      --azul-claro: #eaf5f8;
+      --fundo: #f5f8f9;
+      --branco: #ffffff;
+      --texto: #19323d;
+      --texto-claro: #607984;
+      --borda: #d6e2e6;
+      --verde: #287a59;
+      --vermelho: #a43d3d;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--fundo);
+      color: var(--texto);
+    }
+
+    /* =========================================================
+       HEADER
+       ========================================================= */
+
+    header {
+      height: 122px;
+      background: var(--branco);
+      border-bottom: 1px solid var(--borda);
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      padding: 18px 28px;
+    }
+
+    .logo-header {
+      height: 82px;
+      width: auto;
+      object-fit: contain;
+    }
+
+    #topUser {
+      font-size: 13px;
+      color: var(--texto-claro);
+    }
+
+
+    /* =========================================================
+       ESTRUTURA
+       ========================================================= */
+
+    main {
+      max-width: 1300px;
+      margin: 30px auto;
+      padding: 0 20px;
+    }
+
+    .card {
+      background: var(--branco);
+      border: 1px solid var(--borda);
+      border-radius: 16px;
+      padding: 22px;
+      margin-bottom: 20px;
+
+      box-shadow:
+        0 5px 18px rgba(20, 60, 75, 0.06);
+    }
+
+    h1,
+    h2,
+    h3 {
+      color: var(--azul-escuro);
+      margin-top: 0;
+    }
+
+    h2 {
+      margin-bottom: 8px;
+    }
+
+    h3 {
+      margin-bottom: 8px;
+    }
+
+    .muted {
+      color: var(--texto-claro);
+      font-size: 13px;
+    }
+
+
+    /* =========================================================
+       LOGIN
+       ========================================================= */
+
+    .login {
+      max-width: 470px;
+      margin: 75px auto;
+      text-align: center;
+    }
+
+    .login-logo {
+      width: 230px;
+      max-width: 80%;
+      height: auto;
+      display: block;
+      margin: 0 auto 28px;
+    }
+
+    .login h2 {
+      font-size: 30px;
+      margin-bottom: 28px;
+    }
+
+    .login-field {
+      text-align: left;
+    }
+
+
+    /* =========================================================
+       FORMULÁRIOS
+       ========================================================= */
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+
+      font-size: 12px;
+      font-weight: bold;
+
+      color: #48636e;
+    }
+
+    input,
+    select {
+      width: 100%;
+
+      padding: 11px 12px;
+
+      border: 1px solid #bfd0d6;
+      border-radius: 9px;
+
+      background: white;
+
+      color: var(--texto);
+
+      font-size: 14px;
+    }
+
+    input:focus,
+    select:focus {
+      outline: none;
+      border-color: var(--azul-msb);
+
+      box-shadow:
+        0 0 0 3px rgba(8,112,149,0.10);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 15px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+    }
+
+
+    /* =========================================================
+       BOTÕES
+       ========================================================= */
+
+    button {
+      border: 0;
+      border-radius: 9px;
+
+      padding: 11px 17px;
+
+      background: var(--azul-msb);
+      color: white;
+
+      font-weight: bold;
+      font-size: 14px;
+
+      cursor: pointer;
+    }
+
+    button:hover {
+      filter: brightness(0.95);
+    }
+
+    button.secondary {
+      background: #e7f0f3;
+      color: var(--azul-escuro);
+    }
+
+    button.danger {
+      background: var(--vermelho);
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+
+      margin-top: 17px;
+    }
+
+
+    /* =========================================================
+       ABAS
+       ========================================================= */
+
+    .tabs {
+      display: flex;
+      gap: 9px;
+      flex-wrap: wrap;
+
+      margin-bottom: 20px;
+    }
+
+    .tab {
+      background: #e5eff2;
+      color: var(--azul-escuro);
+    }
+
+    .tab.active {
+      background: var(--azul-escuro);
+      color: white;
+    }
+
+
+    /* =========================================================
+       COMPARAÇÃO
+       ========================================================= */
+
+    .compare {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+
+    .pane {
+      background: white;
+
+      border: 1px solid var(--borda);
+      border-radius: 14px;
+
+      padding: 16px;
+    }
+
+    .pane-title {
+      font-size: 19px;
+      font-weight: bold;
+      color: var(--azul-escuro);
+    }
+
+    .pane-meta {
+      margin-top: 5px;
+
+      font-size: 12px;
+      color: var(--texto-claro);
+    }
+
+    .pane img {
+      width: 100%;
+      height: 440px;
+
+      object-fit: contain;
+
+      background: #101820;
+
+      border-radius: 10px;
+
+      margin-top: 14px;
+    }
+
+
+    /* =========================================================
+       GRÁFICO
+       ========================================================= */
+
+    .chart-container {
+      position: relative;
+
+      width: 100%;
+      height: 470px;
+
+      margin-top: 15px;
+    }
+
+
+    /* =========================================================
+       TABELA
+       ========================================================= */
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+
+      font-size: 13px;
+    }
+
+    th,
+    td {
+      padding: 10px;
+
+      border-bottom: 1px solid var(--borda);
+
+      text-align: left;
+    }
+
+    th {
+      background: #eff5f7;
+
+      color: var(--azul-escuro);
+
+      font-weight: bold;
+    }
+
+
+    /* =========================================================
+       STATUS
+       ========================================================= */
+
+    .status {
+      margin-top: 12px;
+
+      padding: 11px;
+
+      border-radius: 8px;
+
+      background: #edf7f2;
+
+      color: #236648;
+
+      font-size: 13px;
+    }
+
+    .status.error {
+      background: #fff0f0;
+
+      color: #923434;
+    }
+
+    .status.warning {
+      background: #fff8e8;
+
+      color: #84620d;
+    }
+
+
+    /* =========================================================
+       INFO
+       ========================================================= */
+
+    .info {
+      padding: 13px;
+
+      border-left: 4px solid var(--azul-msb);
+
+      background: var(--azul-claro);
+
+      border-radius: 7px;
+
+      font-size: 13px;
+
+      margin-top: 15px;
+    }
+
+
+    /* =========================================================
+       MÉTRICAS
+       ========================================================= */
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+
+      gap: 15px;
+
+      margin-bottom: 18px;
+    }
+
+    .metric {
+      background: #f4f8f9;
+
+      border: 1px solid var(--borda);
+
+      border-radius: 12px;
+
+      padding: 17px;
+    }
+
+    .metric-value {
+      font-size: 28px;
+      font-weight: bold;
+
+      color: var(--azul-escuro);
+    }
+
+    .metric-label {
+      font-size: 12px;
+
+      color: var(--texto-claro);
+
+      margin-top: 5px;
+    }
+
+
+    /* =========================================================
+       UTILIDADES
+       ========================================================= */
+
+    .hidden {
+      display: none !important;
+    }
+
+    .right {
+      text-align: right;
+    }
+
+
+    /* =========================================================
+       RESPONSIVO
+       ========================================================= */
+
+    @media (max-width: 950px) {
+
+      .grid,
+      .grid-3 {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .compare {
+        grid-template-columns: 1fr;
+      }
+
+    }
+
+    @media (max-width: 600px) {
+
+      header {
+        height: auto;
+
+        padding: 15px;
+
+        gap: 10px;
+
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .logo-header {
+        height: 65px;
+      }
+
+      .grid,
+      .grid-2,
+      .grid-3,
+      .metrics {
+        grid-template-columns: 1fr;
+      }
+
+      main {
+        padding: 0 10px;
+      }
+
+      .pane img {
+        height: 300px;
+      }
+
+    }
+
+  </style>
+
 </head>
+
+
 <body>
+
+
+<!-- ============================================================
+     CABEÇALHO
+     ============================================================ -->
+
 <header>
-  <img class="msb-logo" src="logo-msb.png" alt="MSB Medical System do Brasil">
-  <div id="topUser" class="muted"></div>
+
+  <!--
+       COLOQUE logo-msb.png NA MESMA PASTA DO index.html
+  -->
+
+  <img
+    src="logo-msb.png"
+    alt="MSB Medical System do Brasil"
+    class="logo-header"
+  >
+
+  <div id="topUser"></div>
+
 </header>
 
-<div id="login" class="login card">
-  <div class="logo">MSB</div>
-  <h2>Biblioteca Científica</h2>
-  <p class="muted">Microscopia e dados de meia-vida.</p>
-  <label>E-mail</label><input id="email" type="email" placeholder="seu e-mail">
-  <label style="margin-top:12px">Senha</label><input id="password" type="password" placeholder="senha">
-  <div class="actions"><button onclick="login()">Entrar</button></div>
-  <div id="loginMsg"></div>
-</div>
 
-<main id="app" class="hidden">
-  <div class="tabs">
-    <button id="tabMicro" class="tab active" onclick="showTab('micro')">🔬 Microscopia</button>
-    <button id="tabHalf" class="tab" onclick="showTab('half')">📊 Meia-vida</button>
-    <button id="tabAdmin" class="tab hidden" onclick="showTab('admin')">⚙ Administrador</button>
-    <button class="secondary" onclick="logout()">Sair</button>
+
+<!-- ============================================================
+     LOGIN
+     ============================================================ -->
+
+<div id="login" class="login card">
+
+  <img
+    src="logo-msb.png"
+    alt="MSB Medical System do Brasil"
+    class="login-logo"
+  >
+
+  <h2>Biblioteca</h2>
+
+  <div class="login-field">
+
+    <label for="password">
+      Senha
+    </label>
+
+    <input
+      id="password"
+      type="password"
+      placeholder="Digite sua senha"
+      autocomplete="off"
+      onkeydown="if(event.key === 'Enter') login()"
+    >
+
   </div>
 
+  <div class="actions">
+
+    <button onclick="login()">
+      Entrar
+    </button>
+
+  </div>
+
+  <div id="loginMsg"></div>
+
+</div>
+
+
+
+<!-- ============================================================
+     APLICAÇÃO
+     ============================================================ -->
+
+<main id="app" class="hidden">
+
+
+  <!-- ==========================================================
+       ABAS
+       ========================================================== -->
+
+  <div class="tabs">
+
+    <button
+      id="tabMicro"
+      class="tab active"
+      onclick="showTab('micro')"
+    >
+      🔬 Microscopia
+    </button>
+
+    <button
+      id="tabHalf"
+      class="tab"
+      onclick="showTab('half')"
+    >
+      📊 Meia-vida
+    </button>
+
+    <button
+      id="tabAdmin"
+      class="tab hidden"
+      onclick="showTab('admin')"
+    >
+      ⚙ Administrador
+    </button>
+
+    <button
+      class="secondary"
+      onclick="logout()"
+    >
+      Sair
+    </button>
+
+  </div>
+
+
+
+  <!-- ==========================================================
+       MICROSCOPIA
+       ========================================================== -->
+
   <section id="micro">
+
     <div class="card">
-      <h2>Comparação de microscopia</h2>
-      <p class="muted">A concentração é única para a comparação. Os tempos e amostras aparecem somente quando existem no banco.</p>
+
+      <h2>Microscopia</h2>
+
+      <p class="muted">
+        Compare duas imagens mantendo obrigatoriamente a mesma
+        concentração de polidocanol.
+      </p>
+
+
+      <!-- CONCENTRAÇÃO -->
+
       <div class="grid">
-        <div><label>Concentração</label><select id="cCon" onchange="refreshMicro()"></select></div>
-        <div><label>Imagem A — dispositivo</label><select id="aDev" onchange="refreshSide('a')"></select></div>
-        <div><label>Imagem A — seringa</label><select id="aSyr" onchange="refreshSide('a')"></select></div>
-        <div><label>Imagem A — proporção</label><select id="aProp" onchange="refreshSide('a')"></select></div>
+
+        <div>
+
+          <label>
+            Concentração
+          </label>
+
+          <select
+            id="cCon"
+            onchange="refreshMicro()"
+          ></select>
+
+        </div>
+
       </div>
-      <div class="grid" style="margin-top:14px">
-        <div><label>Imagem A — tempo</label><select id="aTime" onchange="refreshSide('a')"></select></div>
-        <div><label>Imagem A — amostra</label><select id="aSample" onchange="renderCompare()"></select></div>
-        <div><label>Imagem B — dispositivo</label><select id="bDev" onchange="refreshSide('b')"></select></div>
-        <div><label>Imagem B — seringa</label><select id="bSyr" onchange="refreshSide('b')"></select></div>
+
+
+      <br>
+
+
+      <!-- IMAGEM A -->
+
+      <h3>Imagem A</h3>
+
+      <div class="grid">
+
+        <div>
+
+          <label>
+            Dispositivo
+          </label>
+
+          <select
+            id="aDev"
+            onchange="refreshSide('a')"
+          ></select>
+
+        </div>
+
+
+        <div>
+
+          <label>
+            Configuração da seringa
+          </label>
+
+          <select
+            id="aSyr"
+            onchange="refreshSide('a')"
+          ></select>
+
+        </div>
+
+
+        <div>
+
+          <label>
+            Proporção
+          </label>
+
+          <select
+            id="aProp"
+            onchange="refreshSide('a')"
+          ></select>
+
+        </div>
+
+
+        <div>
+
+          <label>
+            Tempo
+          </label>
+
+          <select
+            id="aTime"
+            onchange="refreshSide('a')"
+          ></select>
+
+        </div>
+
       </div>
-      <div class="grid" style="margin-top:14px">
-        <div><label>Imagem B — proporção</label><select id="bProp" onchange="refreshSide('b')"></select></div>
-        <div><label>Imagem B — tempo</label><select id="bTime" onchange="refreshSide('b')"></select></div>
-        <div><label>Imagem B — amostra</label><select id="bSample" onchange="renderCompare()"></select></div>
+
+
+      <div class="grid" style="margin-top:15px">
+
+        <div>
+
+          <label>
+            Amostra
+          </label>
+
+          <select
+            id="aSample"
+            onchange="renderCompare()"
+          ></select>
+
+        </div>
+
       </div>
+
+
+      <br>
+
+
+      <!-- IMAGEM B -->
+
+      <h3>Imagem B</h3>
+
+      <div class="grid">
+
+        <div>
+
+          <label>
+            Dispositivo
+          </label>
+
+          <select
+            id="bDev"
+            onchange="refreshSide('b')"
+          ></select>
+
+        </div>
+
+
+        <div>
+
+          <label>
+            Configuração da seringa
+          </label>
+
+          <select
+            id="bSyr"
+            onchange="refreshSide('b')"
+          ></select>
+
+        </div>
+
+
+        <div>
+
+          <label>
+            Proporção
+          </label>
+
+          <select
+            id="bProp"
+            onchange="refreshSide('b')"
+          ></select>
+
+        </div>
+
+
+        <div>
+
+          <label>
+            Tempo
+          </label>
+
+          <select
+            id="bTime"
+            onchange="refreshSide('b')"
+          ></select>
+
+        </div>
+
+      </div>
+
+
+      <div class="grid" style="margin-top:15px">
+
+        <div>
+
+          <label>
+            Amostra
+          </label>
+
+          <select
+            id="bSample"
+            onchange="renderCompare()"
+          ></select>
+
+        </div>
+
+      </div>
+
     </div>
+
+
+
+    <!-- COMPARAÇÃO -->
+
     <div class="compare">
-      <div class="pane"><h3 id="aTitle">Imagem A</h3><div id="aMeta" class="muted"></div><img id="aImg" alt="Imagem A"></div>
-      <div class="pane"><h3 id="bTitle">Imagem B</h3><div id="bMeta" class="muted"></div><img id="bImg" alt="Imagem B"></div>
+
+
+      <div class="pane">
+
+        <div
+          id="aTitle"
+          class="pane-title"
+        >
+          Imagem A
+        </div>
+
+        <div
+          id="aMeta"
+          class="pane-meta"
+        >
+          Nenhuma imagem selecionada.
+        </div>
+
+        <img
+          id="aImg"
+          alt="Imagem A"
+        >
+
+      </div>
+
+
+
+      <div class="pane">
+
+        <div
+          id="bTitle"
+          class="pane-title"
+        >
+          Imagem B
+        </div>
+
+        <div
+          id="bMeta"
+          class="pane-meta"
+        >
+          Nenhuma imagem selecionada.
+        </div>
+
+        <img
+          id="bImg"
+          alt="Imagem B"
+        >
+
+      </div>
+
     </div>
+
   </section>
 
-  <section id="half" class="hidden">
+
+
+  <!-- ==========================================================
+       MEIA-VIDA
+       ========================================================== -->
+
+  <section
+    id="half"
+    class="hidden"
+  >
+
     <div class="card">
-      <h2>Meia-vida</h2>
+
+      <h2>
+        Meia-vida
+      </h2>
+
+      <p class="muted">
+        Os resultados são agrupados por dispositivo, operador,
+        configuração da seringa e proporção.
+      </p>
+
+
       <div class="grid">
-        <div><label>Concentração</label><select id="hCon" onchange="renderHalf()"></select></div>
-        <div><label>Dispositivo</label><select id="hDev" onchange="renderHalf()"></select></div>
-        <div><label>Configuração da seringa</label><select id="hSyr" onchange="renderHalf()"></select></div>
-        <div><label>Proporção</label><select id="hProp" onchange="renderHalf()"></select></div>
+
+        <div>
+
+          <label>
+            Concentração
+          </label>
+
+          <select
+            id="hCon"
+            onchange="renderHalf()"
+          ></select>
+
+        </div>
+
+
+        <div>
+
+          <label>
+            Dispositivo
+          </label>
+
+          <select
+            id="hDev"
+            onchange="renderHalf()"
+          ></select>
+
+        </div>
+
+
+        <div>
+
+          <label>
+            Configuração da seringa
+          </label>
+
+          <select
+            id="hSyr"
+            onchange="renderHalf()"
+          ></select>
+
+        </div>
+
+
+        <div>
+
+          <label>
+            Proporção
+          </label>
+
+          <select
+            id="hProp"
+            onchange="renderHalf()"
+          ></select>
+
+        </div>
+
       </div>
-      <div id="chartWrap"><canvas id="halfChart"></canvas></div>
+
+
+      <div class="chart-container">
+
+        <canvas id="halfChart"></canvas>
+
+      </div>
+
+
       <div class="actions">
-        <button onclick="exportHalfExcel()">Exportar Excel</button>
-        <button onclick="exportHalfPDF()">Imprimir / PDF</button>
+
+        <button onclick="exportHalfExcel()">
+          Exportar Excel
+        </button>
+
+        <button onclick="exportHalfPDF()">
+          Imprimir / PDF
+        </button>
+
       </div>
+
     </div>
-    <div class="card"><h3>Resumo das condições</h3><div id="halfTable"></div></div>
+
+
+
+    <!-- MÉTRICAS -->
+
+    <div
+      class="metrics"
+      id="halfMetrics"
+    ></div>
+
+
+
+    <!-- TABELA -->
+
+    <div class="card">
+
+      <h3>
+        Resultados consolidados
+      </h3>
+
+      <div id="halfTable"></div>
+
+    </div>
+
   </section>
 
-  <section id="admin" class="hidden">
-    <div class="card">
-      <h2>Cadastro de microscopia</h2>
-      <div class="grid">
-        <div><label>Dispositivo</label><select id="mDev"></select></div>
-        <div><label>Concentração</label><select id="mCon"></select></div>
-        <div><label>Configuração da seringa</label><select id="mSyr"><option>10 ml / 10 ml</option><option>5 ml / 3 ml</option></select></div>
-        <div><label>Proporção</label><input id="mProp" placeholder="Ex.: 1:4"></div>
-        <div><label>Tempo (s)</label><input id="mTime" type="number" min="0" step="0.1"></div>
-        <div><label>Amostra</label><input id="mSample" placeholder="A, B, C..."></div>
-        <div><label>Imagem</label><input id="mFile" type="file" accept="image/*"></div>
-      </div>
-      <div class="actions"><button onclick="saveMicro()">Salvar imagem</button></div><div id="microMsg"></div>
-    </div>
+
+
+  <!-- ==========================================================
+       ADMINISTRADOR
+       ========================================================== -->
+
+  <section
+    id="admin"
+    class="hidden"
+  >
+
+
+    <!-- ========================================================
+         CADASTRO DE MICROSCOPIA
+         ======================================================== -->
 
     <div class="card">
-      <h2>Cadastro / importação de meia-vida</h2>
+
+      <h2>
+        Cadastro de microscopia
+      </h2>
+
       <div class="grid">
-        <div><label>Dispositivo</label><select id="xDev"></select></div>
-        <div><label>Concentração</label><select id="xCon"></select></div>
-        <div><label>Configuração da seringa</label><select id="xSyr"><option>10 ml / 10 ml</option><option>5 ml / 3 ml</option></select></div>
-        <div><label>Proporção</label><input id="xProp" placeholder="Ex.: 1:4"></div>
-        <div><label>Meia-vida (s)</label><input id="xHalf" type="number" step="0.1"></div>
-        <div><label>Operador</label><input id="xOp" placeholder="Nome do operador"></div>
-        <div><label>Laboratório</label><input id="xLab"></div>
+
+
+        <div>
+
+          <label>
+            Dispositivo
+          </label>
+
+          <select id="mDev"></select>
+
+        </div>
+
+
+        <div>
+
+          <label>
+            Concentração
+          </label>
+
+          <select id="mCon"></select>
+
+        </div>
+
+
+        <div>
+
+          <label>
+            Configuração da seringa
+          </label>
+
+          <select id="mSyr">
+
+            <option value="10 ml / 10 ml">
+              10 ml / 10 ml
+            </option>
+
+            <option value="5 ml / 3 ml">
+              5 ml / 3 ml
+            </option>
+
+          </select>
+
+        </div>
+
+
+        <div>
+
+          <label>
+            Proporção
+          </label>
+
+          <input
+            id="mProp"
+            placeholder="Ex.: 1:4"
+          >
+
+        </div>
+
+
+        <div>
+
+          <label>
+            Tempo da microscopia (s)
+          </label>
+
+          <input
+            id="mTime"
+            type="number"
+            min="0"
+            step="0.1"
+          >
+
+        </div>
+
+
+        <div>
+
+          <label>
+            Amostra
+          </label>
+
+          <input
+            id="mSample"
+            placeholder="A, B, C..."
+          >
+
+        </div>
+
+
+        <div>
+
+          <label>
+            Imagem
+          </label>
+
+          <input
+            id="mFile"
+            type="file"
+            accept="image/*"
+          >
+
+        </div>
+
       </div>
-      <div class="actions"><button onclick="saveHalf()">Salvar medição</button><input id="excelFile" type="file" accept=".xlsx,.xls" onchange="importExcel(event)"></div>
-      <p class="muted">Excel: Dispositivo, Concentração, Tempo de meia-vida, Operador. Seringa e proporção podem ser adicionadas nas colunas correspondentes.</p>
+
+
+      <div class="actions">
+
+        <button onclick="saveMicro()">
+          Salvar imagem
+        </button>
+
+      </div>
+
+
+      <div id="microMsg"></div>
+
+    </div>
+
+
+
+    <!-- ========================================================
+         CADASTRO DE MEIA-VIDA
+         ======================================================== -->
+
+    <div class="card">
+
+      <h2>
+        Cadastro de meia-vida
+      </h2>
+
+      <div class="grid">
+
+
+        <div>
+
+          <label>
+            Dispositivo
+          </label>
+
+          <select id="xDev"></select>
+
+        </div>
+
+
+        <div>
+
+          <label>
+            Concentração
+          </label>
+
+          <select id="xCon"></select>
+
+        </div>
+
+
+        <div>
+
+          <label>
+            Configuração da seringa
+          </label>
+
+          <select id="xSyr">
+
+            <option value="10 ml / 10 ml">
+              10 ml / 10 ml
+            </option>
+
+            <option value="5 ml / 3 ml">
+              5 ml / 3 ml
+            </option>
+
+          </select>
+
+        </div>
+
+
+        <div>
+
+          <label>
+            Proporção
+          </label>
+
+          <input
+            id="xProp"
+            placeholder="Ex.: 1:4"
+          >
+
+        </div>
+
+
+        <div>
+
+          <label>
+            Tempo de meia-vida (s)
+          </label>
+
+          <input
+            id="xHalf"
+            type="number"
+            step="0.1"
+          >
+
+        </div>
+
+
+        <div>
+
+          <label>
+            Operador
+          </label>
+
+          <input
+            id="xOp"
+            placeholder="Nome do operador"
+          >
+
+        </div>
+
+
+        <div>
+
+          <label>
+            Laboratório
+          </label>
+
+          <input
+            id="xLab"
+            placeholder="Opcional"
+          >
+
+        </div>
+
+      </div>
+
+
+      <div class="actions">
+
+        <button onclick="saveHalf()">
+          Salvar medição
+        </button>
+
+
+        <label
+          style="
+            display:flex;
+            align-items:center;
+            gap:8px;
+            padding:11px 15px;
+            background:#e7f0f3;
+            color:#073c55;
+            border-radius:9px;
+            cursor:pointer;
+            font-weight:bold;
+          "
+        >
+
+          📁 Importar Excel
+
+          <input
+            id="excelFile"
+            type="file"
+            accept=".xlsx,.xls"
+            onchange="importExcel(event)"
+            style="display:none"
+          >
+
+        </label>
+
+      </div>
+
+
+      <div class="info">
+
+        <strong>Excel:</strong>
+
+        Você pode importar as colunas:
+
+        <br><br>
+
+        Dispositivo |
+        Concentração |
+        Tempo de meia-vida |
+        Operador |
+        Configuração da seringa |
+        Proporção |
+        Laboratório
+
+        <br><br>
+
+        O aplicativo calcula automaticamente a média e o número
+        de amostras.
+
+      </div>
+
+
       <div id="halfMsg"></div>
+
     </div>
+
+
+
+    <!-- ========================================================
+         ATUALIZAÇÃO
+         ======================================================== -->
+
+    <div class="card">
+
+      <h3>
+        Banco de dados
+      </h3>
+
+      <div class="actions">
+
+        <button
+          class="secondary"
+          onclick="loadData()"
+        >
+          Atualizar dados
+        </button>
+
+      </div>
+
+      <div
+        id="adminStats"
+        style="margin-top:15px"
+      ></div>
+
+    </div>
+
   </section>
+
+
 </main>
 
-<script>
-const SUPABASE_URL = "COLE_AQUI_SUA_SUPABASE_URL";
-const SUPABASE_KEY = "COLE_AQUI_SUA_SUPABASE_PUBLISHABLE_KEY";
-const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-const DEVICES=["BFoam","Tessari","Varíxio","Steriven"], CONS=["0.25%","0.50%","1%","3%"], SYR=["10 ml / 10 ml","5 ml / 3 ml"];
-let user=null, profile=null, microRows=[], halfRows=[], chart=null, signed={};
 
-function opt(id, vals, selected=""){const e=document.getElementById(id); e.innerHTML=vals.map(v=>`<option value="${esc(v)}">${esc(v)}</option>`).join(""); if(selected&&vals.includes(selected))e.value=selected}
-function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
-function msg(id,t,err=false){document.getElementById(id).innerHTML=`<div class="${err?'status error':'status'}">${esc(t)}</div>`}
-async function login(){
- const {data,error}=await sb.auth.signInWithPassword({email:email.value.trim(),password:password.value});
- if(error){msg("loginMsg",error.message,true);return}
- await boot(data.user);
+
+<!-- ============================================================
+     JAVASCRIPT
+     ============================================================ -->
+
+<script>
+
+
+/* ==============================================================
+   CONFIGURAÇÃO SUPABASE
+   ==============================================================
+
+   COLOQUE AQUI OS DADOS DO SEU PROJETO SUPABASE.
+
+   Exemplo:
+
+   const SUPABASE_URL =
+   "https://xxxxxxxx.supabase.co";
+
+   const SUPABASE_KEY =
+   "eyJhbGciOi...";
+
+   IMPORTANTE:
+   Use somente a Publishable Key / chave pública.
+
+   NÃO coloque a service_role key.
+
+   ============================================================== */
+
+
+const SUPABASE_URL =
+  "COLE_AQUI_SUA_SUPABASE_URL";
+
+
+const SUPABASE_KEY =
+  "COLE_AQUI_SUA_SUPABASE_PUBLISHABLE_KEY";
+
+
+
+/* ==============================================================
+   CONEXÃO
+   ============================================================== */
+
+let sb = null;
+
+if (
+  SUPABASE_URL &&
+  SUPABASE_KEY &&
+  !SUPABASE_URL.includes("COLE_AQUI")
+) {
+
+  sb = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
+
 }
-async function logout(){await sb.auth.signOut();location.reload()}
-async function boot(u){
- user=u;
- const p=await sb.from("profiles").select("role").eq("id",u.id).maybeSingle();
- profile=p.data||{role:"user"};
- login.classList.add("hidden");app.classList.remove("hidden");
- topUser.textContent=(u.email||"")+" · "+profile.role;
- if(profile.role==="admin")tabAdmin.classList.remove("hidden");
- initOptions(); await loadData(); showTab("micro");
+
+
+
+/* ==============================================================
+   SENHAS
+   ==============================================================
+
+   USUÁRIO:
+   msb2026
+
+   ADMINISTRADOR:
+   rafael19
+
+   OBS:
+   Essa autenticação é adequada para o protótipo.
+
+   Para produção com dados confidenciais, o ideal é migrar
+   posteriormente para autenticação real do Supabase.
+
+   ============================================================== */
+
+
+const SENHA_USUARIO =
+  "msb2026";
+
+
+const SENHA_ADMIN =
+  "rafael19";
+
+
+
+/* ==============================================================
+   CONSTANTES
+   ============================================================== */
+
+const DEVICES = [
+  "BFoam",
+  "Tessari",
+  "Varíxio",
+  "Steriven"
+];
+
+
+const CONCENTRATIONS = [
+  "0,25%",
+  "0,50%",
+  "1%",
+  "3%"
+];
+
+
+const SYRINGES = [
+  "10 ml / 10 ml",
+  "5 ml / 3 ml"
+];
+
+
+
+/* ==============================================================
+   ESTADO
+   ============================================================== */
+
+let currentRole = null;
+
+let microRows = [];
+
+let halfRows = [];
+
+let halfChart = null;
+
+let signedUrls = {};
+
+
+
+/* ==============================================================
+   FUNÇÕES BÁSICAS
+   ============================================================== */
+
+function byId(id) {
+
+  return document.getElementById(id);
+
 }
-function initOptions(){
- opt("cCon",CONS);opt("hCon",CONS);opt("mCon",CONS);opt("xCon",CONS);
- opt("aDev",DEVICES);opt("bDev",DEVICES);opt("hDev",["Todos",...DEVICES]);opt("mDev",DEVICES);opt("xDev",DEVICES);
- opt("aSyr",SYR);opt("bSyr",SYR);opt("hSyr",["Todos",...SYR]);
- opt("aProp",["Todos"]);opt("bProp",["Todos"]);opt("hProp",["Todos"]);
+
+
+function escapeHTML(value) {
+
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+
 }
-function showTab(t){
- ["micro","half","admin"].forEach(x=>document.getElementById(x).classList.toggle("hidden",x!==t));
- ["tabMicro","tabHalf","tabAdmin"].forEach(x=>document.getElementById(x).classList.remove("active"));
- if(t==="micro")tabMicro.classList.add("active"); if(t==="half")tabHalf.classList.add("active"); if(t==="admin")tabAdmin.classList.add("active");
- if(t==="half")renderHalf();
+
+
+function uniqueValues(values) {
+
+  return [
+    ...new Set(
+      values
+        .filter(
+          value =>
+            value !== null &&
+            value !== undefined &&
+            String(value) !== ""
+        )
+    )
+  ].sort(
+    (a,b) =>
+      String(a).localeCompare(
+        String(b),
+        undefined,
+        { numeric:true }
+      )
+  );
+
 }
-async function loadData(){
- const m=await sb.from("microscopy_images").select("*").order("created_at",{ascending:false});
- microRows=m.data||[];
- const h=await sb.from("half_life_tests").select("*").order("created_at",{ascending:false});
- halfRows=h.data||[];
- refreshMicro(); renderHalf();
+
+
+function setOptions(
+  elementId,
+  values,
+  selectedValue = ""
+) {
+
+  const element =
+    byId(elementId);
+
+  if (!element) return;
+
+  element.innerHTML = "";
+
+  values.forEach(value => {
+
+    const option =
+      document.createElement("option");
+
+    option.value = value;
+
+    option.textContent = value;
+
+    element.appendChild(option);
+
+  });
+
+  if (
+    selectedValue &&
+    values.includes(selectedValue)
+  ) {
+
+    element.value =
+      selectedValue;
+
+  }
+
 }
-function uniq(a){return [...new Set(a.filter(x=>x!==null&&x!==undefined&&x!==""))].sort((a,b)=>String(a).localeCompare(String(b),undefined,{numeric:true}))}
-function refreshMicro(){
- const c=cCon.value;
- opt("aDev",DEVICES);opt("bDev",DEVICES);
- refreshSide("a");refreshSide("b");
+
+
+
+function showMessage(
+  elementId,
+  message,
+  type = "success"
+) {
+
+  const element =
+    byId(elementId);
+
+  if (!element) return;
+
+  element.innerHTML =
+    `
+      <div class="status ${type}">
+        ${escapeHTML(message)}
+      </div>
+    `;
+
 }
-function rowsFor(side){
- const c=cCon.value, d=document.getElementById(side+"Dev").value, s=document.getElementById(side+"Syr").value, p=document.getElementById(side+"Prop").value;
- return microRows.filter(r=>String(r.concentration)===String(c)&&r.device===d&&(r.syringe_config||"")===s&&((p==="Todos")||(r.proportion||"")===p));
+
+
+
+/* ==============================================================
+   LOGIN
+   ============================================================== */
+
+function login() {
+
+  const password =
+    byId("password").value.trim();
+
+
+  if (password === SENHA_USUARIO) {
+
+    enterApplication("user");
+
+    return;
+
+  }
+
+
+  if (password === SENHA_ADMIN) {
+
+    enterApplication("admin");
+
+    return;
+
+  }
+
+
+  showMessage(
+    "loginMsg",
+    "Senha incorreta.",
+    "error"
+  );
+
 }
-function refreshSide(side){
- const rows0=rowsFor(side);
- const props=uniq(microRows.filter(r=>String(r.concentration)===String(cCon.value)&&r.device===document.getElementById(side+"Dev").value&&String(r.syringe_config||"")===document.getElementById(side+"Syr").value).map(r=>r.proportion));
- const pEl=document.getElementById(side+"Prop"), oldp=pEl.value; opt(side+"Prop",["Todos",...props],oldp);
- const rows=rowsFor(side);
- const times=uniq(rows.map(r=>r.collection_time_seconds));
- const tEl=document.getElementById(side+"Time"), oldt=tEl.value; opt(side+"Time",times,oldt);
- const selectedTime=tEl.value;
- const samples=uniq(rows.filter(r=>String(r.collection_time_seconds)===String(selectedTime)).map(r=>r.sample));
- const sEl=document.getElementById(side+"Sample"), olds=sEl.value; opt(side+"Sample",samples,olds);
- renderCompare();
+
+
+
+function enterApplication(role) {
+
+  currentRole =
+    role;
+
+
+  byId("login")
+    .classList
+    .add("hidden");
+
+
+  byId("app")
+    .classList
+    .remove("hidden");
+
+
+  byId("topUser").textContent =
+    role === "admin"
+      ? "Administrador"
+      : "Usuário";
+
+
+  if (role === "admin") {
+
+    byId("tabAdmin")
+      .classList
+      .remove("hidden");
+
+  } else {
+
+    byId("tabAdmin")
+      .classList
+      .add("hidden");
+
+  }
+
+
+  initializeSelectors();
+
+  loadData();
+
+  showTab("micro");
+
 }
-function getChosen(side){
- const rows=rowsFor(side).filter(r=>String(r.collection_time_seconds)===String(document.getElementById(side+"Time").value)&&String(r.sample)===String(document.getElementById(side+"Sample").value));
- return rows[0];
+
+
+
+function logout() {
+
+  currentRole =
+    null;
+
+  location.reload();
+
 }
-async function imageUrl(row){
- if(!row)return "";
- if(signed[row.id])return signed[row.id];
- const path=row.image_path||row.storage_path;
- if(!path)return "";
- const {data}=await sb.storage.from("microscopy").createSignedUrl(path,3600);
- signed[row.id]=data?.signedUrl||""; return signed[row.id];
+
+
+
+/* ==============================================================
+   ABAS
+   ============================================================== */
+
+function showTab(tab) {
+
+  const sections = [
+    "micro",
+    "half",
+    "admin"
+  ];
+
+
+  sections.forEach(
+    section => {
+
+      byId(section)
+        .classList
+        .toggle(
+          "hidden",
+          section !== tab
+        );
+
+    }
+  );
+
+
+  const tabs = [
+    "tabMicro",
+    "tabHalf",
+    "tabAdmin"
+  ];
+
+
+  tabs.forEach(
+    id => {
+
+      byId(id)
+        .classList
+        .remove("active");
+
+    }
+  );
+
+
+  if (tab === "micro") {
+
+    byId("tabMicro")
+      .classList
+      .add("active");
+
+  }
+
+
+  if (tab === "half") {
+
+    byId("tabHalf")
+      .classList
+      .add("active");
+
+    renderHalf();
+
+  }
+
+
+  if (tab === "admin") {
+
+    byId("tabAdmin")
+      .classList
+      .add("active");
+
+  }
+
 }
-async function renderCompare(){
- for(const side of ["a","b"]){
-  const r=getChosen(side), img=document.getElementById(side+"Img");
-  document.getElementById(side+"Title").textContent=r?`${r.device} · Amostra ${r.sample}`:"Imagem "+side.toUpperCase();
-  document.getElementById(side+"Meta").textContent=r?`${r.concentration} · ${r.syringe_config||""} · ${r.proportion||""} · ${r.collection_time_seconds}s`:"Nenhuma imagem selecionada";
-  img.src=r?await imageUrl(r):"";
- }
+
+
+
+/* ==============================================================
+   INICIALIZAÇÃO DOS SELECTS
+   ============================================================== */
+
+function initializeSelectors() {
+
+  setOptions(
+    "cCon",
+    CONCENTRATIONS
+  );
+
+
+  setOptions(
+    "hCon",
+    CONCENTRATIONS
+  );
+
+
+  setOptions(
+    "mCon",
+    CONCENTRATIONS
+  );
+
+
+  setOptions(
+    "xCon",
+    CONCENTRATIONS
+  );
+
+
+  setOptions(
+    "aDev",
+    DEVICES
+  );
+
+
+  setOptions(
+    "bDev",
+    DEVICES
+  );
+
+
+  setOptions(
+    "mDev",
+    DEVICES
+  );
+
+
+  setOptions(
+    "xDev",
+    DEVICES
+  );
+
+
+  setOptions(
+    "hDev",
+    [
+      "Todos",
+      ...DEVICES
+    ]
+  );
+
+
+  setOptions(
+    "aSyr",
+    SYRINGES
+  );
+
+
+  setOptions(
+    "bSyr",
+    SYRINGES
+  );
+
+
+  setOptions(
+    "hSyr",
+    [
+      "Todos",
+      ...SYRINGES
+    ]
+  );
+
+
+  setOptions(
+    "aProp",
+    ["Todos"]
+  );
+
+
+  setOptions(
+    "bProp",
+    ["Todos"]
+  );
+
+
+  setOptions(
+    "hProp",
+    ["Todos"]
+  );
+
+
+  refreshMicro();
+
 }
-async function saveMicro(){
- if(profile?.role!=="admin")return;
- const f=document.getElementById("mFile").files[0], sample=mSample.value.trim();
- if(!f||!sample||!mTime.value||!mProp.value.trim()){msg("microMsg","Preencha dispositivo, concentração, seringa, proporção, tempo, amostra e imagem.",true);return}
- const safe=Date.now()+"_"+f.name.replace(/[^a-zA-Z0-9._-]/g,"_");
- const path=`${mDev.value}/${mCon.value.replace("%","")}/${mSyr.value.replace(/[^a-zA-Z0-9]/g,"_")}/${mProp.value.trim().replace(/[^a-zA-Z0-9:.-]/g,"_")}/${mTime.value}s/amostra-${sample}/${safe}`;
- const up=await sb.storage.from("microscopy").upload(path,f,{upsert:false});
- if(up.error){msg("microMsg",up.error.message,true);return}
- const ins=await sb.from("microscopy_images").insert({device:mDev.value,concentration:mCon.value,syringe_config:mSyr.value,proportion:mProp.value.trim(),collection_time_seconds:Number(mTime.value),sample,image_path:path}).select().single();
- if(ins.error){await sb.storage.from("microscopy").remove([path]);msg("microMsg",ins.error.message,true);return}
- msg("microMsg","Imagem cadastrada com sucesso."); document.getElementById("mFile").value=""; await loadData();
+
+
+
+/* ==============================================================
+   CARREGAR DADOS DO SUPABASE
+   ============================================================== */
+
+async function loadData() {
+
+  if (!sb) {
+
+    microRows = [];
+
+    halfRows = [];
+
+    showMessage(
+      "microMsg",
+      "Supabase ainda não configurado. Preencha SUPABASE_URL e SUPABASE_KEY no código.",
+      "warning"
+    );
+
+    refreshMicro();
+
+    renderHalf();
+
+    return;
+
+  }
+
+
+  try {
+
+    const micro =
+      await sb
+        .from("microscopy_images")
+        .select("*")
+        .order(
+          "created_at",
+          { ascending:false }
+        );
+
+
+    if (micro.error) {
+
+      console.error(
+        micro.error
+      );
+
+      microRows = [];
+
+    } else {
+
+      microRows =
+        micro.data || [];
+
+    }
+
+
+    const half =
+      await sb
+        .from("half_life_tests")
+        .select("*")
+        .order(
+          "created_at",
+          { ascending:false }
+        );
+
+
+    if (half.error) {
+
+      console.error(
+        half.error
+      );
+
+      halfRows = [];
+
+    } else {
+
+      halfRows =
+        half.data || [];
+
+    }
+
+
+    refreshMicro();
+
+    renderHalf();
+
+    updateAdminStats();
+
+  }
+
+  catch(error) {
+
+    console.error(error);
+
+    showMessage(
+      "microMsg",
+      "Não foi possível carregar os dados.",
+      "error"
+    );
+
+  }
+
 }
-async function saveHalf(){
- if(profile?.role!=="admin")return;
- if(!xHalf.value||!xOp.value.trim()||!xProp.value.trim()){msg("halfMsg","Preencha meia-vida, operador e proporção.",true);return}
- const r={device:xDev.value,concentration:xCon.value,syringe_config:xSyr.value,proportion:xProp.value.trim(),half_life_seconds:Number(xHalf.value),operator:xOp.value.trim(),laboratory:document.getElementById("xLab").value.trim()||null};
- const q=await sb.from("half_life_tests").insert(r);
- if(q.error)msg("halfMsg",q.error.message,true);else{msg("halfMsg","Medição cadastrada.");await loadData()}
+
+
+
+/* ==============================================================
+   MICROSCOPIA
+   ============================================================== */
+
+function refreshMicro() {
+
+  refreshSide("a");
+
+  refreshSide("b");
+
 }
-function importExcel(ev){
- if(profile?.role!=="admin")return;
- const f=ev.target.files[0]; if(!f)return;
- const rd=new FileReader();rd.onload=async e=>{
-  try{
-   const wb=XLSX.read(new Uint8Array(e.target.result),{type:"array"}), ws=wb.Sheets[wb.SheetNames[0]], rows=XLSX.utils.sheet_to_json(ws,{defval:""});
-   const norm=s=>String(s).normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().trim();
-   const out=[];
-   for(const r of rows){
-    const map={};Object.keys(r).forEach(k=>map[norm(k)]=r[k]);
-    const device=String(map["dispositivo"]||map["device"]||"").trim(), con=String(map["concentracao"]||map["concentracao (%)"]||"").trim(), half=Number(map["tempo de meia-vida"]||map["meia-vida"]||map["half_life_seconds"]||0), op=String(map["operador"]||map["operator"]||"").trim();
-    if(!device||!con||!half||!op)continue;
-    out.push({device,concentration:con,syringe_config:String(map["configuracao da seringa"]||map["syringe_config"]||"10 ml / 10 ml"),proportion:String(map["proporcao"]||map["proportion"]||""),half_life_seconds:half,operator:op,laboratory:String(map["laboratorio"]||map["laboratory"]||"")||null});
-   }
-   if(!out.length){msg("halfMsg","Nenhuma linha válida encontrada.",true);return}
-   const q=await sb.from("half_life_tests").insert(out);
-   if(q.error)msg("halfMsg",q.error.message,true);else{msg("halfMsg",`${out.length} medições importadas.`);await loadData()}
-  }catch(err){msg("halfMsg","Erro ao ler o Excel: "+err.message,true)}
- };rd.readAsArrayBuffer(f);
+
+
+
+function getSideRows(side) {
+
+  const concentration =
+    byId("cCon").value;
+
+
+  const device =
+    byId(side + "Dev").value;
+
+
+  const syringe =
+    byId(side + "Syr").value;
+
+
+  const proportion =
+    byId(side + "Prop").value;
+
+
+  return microRows.filter(
+    row => {
+
+      const sameConcentration =
+        String(row.concentration) ===
+        String(concentration);
+
+
+      const sameDevice =
+        row.device === device;
+
+
+      const sameSyringe =
+        String(row.syringe_config || "") ===
+        String(syringe);
+
+
+      const sameProportion =
+        proportion === "Todos" ||
+        String(row.proportion || "") ===
+        String(proportion);
+
+
+      return (
+        sameConcentration &&
+        sameDevice &&
+        sameSyringe &&
+        sameProportion
+      );
+
+    }
+  );
+
 }
-function aggregate(){
- const c=hCon.value,d=hDev.value,s=hSyr.value,p=hProp.value;
- let rows=halfRows.filter(r=>String(r.concentration)===String(c));
- if(d!=="Todos")rows=rows.filter(r=>r.device===d);
- if(s!=="Todos")rows=rows.filter(r=>(r.syringe_config||"")===s);
- if(p!=="Todos")rows=rows.filter(r=>(r.proportion||"")===p);
- const groups={};
- rows.forEach(r=>{const key=[r.device,r.operator,r.syringe_config||"",r.proportion||""].join("||");(groups[key]??=[]).push(r)});
- return Object.values(groups).map(g=>({device:g[0].device,operator:g[0].operator,syringe:g[0].syringe_config||"",prop:g[0].proportion||"",n:g.length,mean:g.reduce((a,r)=>a+Number(r.half_life_seconds),0)/g.length})).sort((a,b)=>a.mean-b.mean);
+
+
+
+function refreshSide(side) {
+
+  const concentration =
+    byId("cCon").value;
+
+
+  const device =
+    byId(side + "Dev").value;
+
+
+  const syringe =
+    byId(side + "Syr").value;
+
+
+  /* ============================================================
+     PROPORÇÕES DISPONÍVEIS
+     ============================================================ */
+
+  const proportions =
+    uniqueValues(
+      microRows
+        .filter(
+          row =>
+            String(row.concentration) ===
+              String(concentration) &&
+            row.device === device &&
+            String(row.syringe_config || "") ===
+              String(syringe)
+        )
+        .map(
+          row => row.proportion
+        )
+    );
+
+
+  const oldProp =
+    byId(side + "Prop").value;
+
+
+  setOptions(
+    side + "Prop",
+    [
+      "Todos",
+      ...proportions
+    ],
+    oldProp
+  );
+
+
+  /* ============================================================
+     TEMPOS
+     ============================================================ */
+
+  const rows =
+    getSideRows(side);
+
+
+  const times =
+    uniqueValues(
+      rows.map(
+        row =>
+          row.collection_time_seconds
+      )
+    );
+
+
+  const oldTime =
+    byId(side + "Time").value;
+
+
+  setOptions(
+    side + "Time",
+    times,
+    oldTime
+  );
+
+
+  /* ============================================================
+     AMOSTRAS
+     ============================================================ */
+
+  const selectedTime =
+    byId(side + "Time").value;
+
+
+  const samples =
+    uniqueValues(
+      rows
+        .filter(
+          row =>
+            String(
+              row.collection_time_seconds
+            ) ===
+            String(selectedTime)
+        )
+        .map(
+          row =>
+            row.sample
+        )
+    );
+
+
+  const oldSample =
+    byId(side + "Sample").value;
+
+
+  setOptions(
+    side + "Sample",
+    samples,
+    oldSample
+  );
+
+
+  renderCompare();
+
 }
-function renderHalf(){
- const data=aggregate(), ctx=document.getElementById("halfChart");
- if(chart)chart.destroy();
- const labels=data.map(x=>`${x.device} — ${x.operator}`), vals=data.map(x=>x.mean);
- chart=new Chart(ctx,{type:"bar",data:{labels,datasets:[{label:"Meia-vida média (s)",data:vals}]},options:{responsive:true,maintainAspectRatio:false,plugins:{title:{display:true,text:`Meia-vida · ${hCon.value}`},tooltip:{callbacks:{afterLabel:c=>`N = ${data[c.dataIndex].n} amostras`}}},scales:{y:{beginAtZero:true,title:{display:true,text:"Segundos"}}}}});
- halfTable.innerHTML=`<table><thead><tr><th>Dispositivo</th><th>Operador</th><th>Seringa</th><th>Proporção</th><th>Média (s)</th><th>N amostras</th></tr></thead><tbody>${data.map(x=>`<tr><td>${esc(x.device)}</td><td>${esc(x.operator)}</td><td>${esc(x.syringe)}</td><td>${esc(x.prop)}</td><td>${x.mean.toFixed(1)}</td><td>${x.n}</td></tr>`).join("")}</tbody></table>`;
+
+
+
+/* ==============================================================
+   PEGAR IMAGEM ESCOLHIDA
+   ============================================================== */
+
+function getSelectedMicroImage(side) {
+
+  const rows =
+    getSideRows(side);
+
+
+  const time =
+    byId(side + "Time").value;
+
+
+  const sample =
+    byId(side + "Sample").value;
+
+
+  return rows.find(
+    row =>
+      String(
+        row.collection_time_seconds
+      ) ===
+      String(time) &&
+      String(
+        row.sample
+      ) ===
+      String(sample)
+  );
+
 }
-function exportHalfExcel(){
- const d=aggregate(); const ws=XLSX.utils.json_to_sheet(d.map(x=>({Dispositivo:x.device,Operador:x.operator,Seringa:x.syringe,Proporcao:x.prop,"Media (s)":Number(x.mean.toFixed(2)),"N amostras":x.n})));
- const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,"Resumo");XLSX.writeFile(wb,`MSB_meia_vida_${hCon.value}.xlsx`);
+
+
+
+/* ==============================================================
+   URL ASSINADA DA IMAGEM
+   ============================================================== */
+
+async function getImageURL(row) {
+
+  if (!row) {
+
+    return "";
+
+  }
+
+
+  if (signedUrls[row.id]) {
+
+    return signedUrls[row.id];
+
+  }
+
+
+  const path =
+    row.image_path ||
+    row.storage_path;
+
+
+  if (!path || !sb) {
+
+    return "";
+
+  }
+
+
+  try {
+
+    const result =
+      await sb
+        .storage
+        .from("microscopy")
+        .createSignedUrl(
+          path,
+          3600
+        );
+
+
+    if (
+      result.data &&
+      result.data.signedUrl
+    ) {
+
+      signedUrls[row.id] =
+        result.data.signedUrl;
+
+      return result.data.signedUrl;
+
+    }
+
+  }
+
+  catch(error) {
+
+    console.error(error);
+
+  }
+
+
+  return "";
+
 }
-function exportHalfPDF(){
- const {jsPDF}=window.jspdf,d=aggregate(),pdf=new jsPDF();pdf.text("MSB — Biblioteca Científica",14,18);pdf.text(`Meia-vida · ${hCon.value}`,14,28);
- pdf.autoTable({startY:35,head:[["Dispositivo","Operador","Seringa","Proporção","Média (s)","N"]],body:d.map(x=>[x.device,x.operator,x.syringe,x.prop,x.mean.toFixed(1),x.n])});
- pdf.save(`MSB_meia_vida_${hCon.value}.pdf`);
+
+
+
+/* ==============================================================
+   RENDER COMPARAÇÃO
+   ============================================================== */
+
+async function renderCompare() {
+
+  for (
+    const side of ["a", "b"]
+  ) {
+
+    const row =
+      getSelectedMicroImage(side);
+
+
+    const title =
+      byId(side + "Title");
+
+
+    const meta =
+      byId(side + "Meta");
+
+
+    const image =
+      byId(side + "Img");
+
+
+    if (!row) {
+
+      title.textContent =
+        "Imagem " +
+        side.toUpperCase();
+
+
+      meta.textContent =
+        "Nenhuma imagem correspondente encontrada.";
+
+
+      image.removeAttribute("src");
+
+
+      continue;
+
+    }
+
+
+    title.textContent =
+      row.device +
+      " · Amostra " +
+      row.sample;
+
+
+    meta.textContent =
+      `${row.concentration} · ` +
+      `${row.syringe_config || ""} · ` +
+      `${row.proportion || ""} · ` +
+      `${row.collection_time_seconds}s`;
+
+
+    image.src =
+      await getImageURL(row);
+
+  }
+
 }
-sb.auth.getSession().then(async ({data})=>{if(data.session)await boot(data.session.user)});
-sb.auth.onAuthStateChange(async (_e,s)=>{if(s&&!user)await boot(s.user)});
+
+
+
+/* ==============================================================
+   SALVAR IMAGEM
+   ============================================================== */
+
+async function saveMicro() {
+
+  if (currentRole !== "admin") {
+
+    return;
+
+  }
+
+
+  if (!sb) {
+
+    showMessage(
+      "microMsg",
+      "Configure o Supabase antes de cadastrar imagens.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  const file =
+    byId("mFile").files[0];
+
+
+  const device =
+    byId("mDev").value;
+
+
+  const concentration =
+    byId("mCon").value;
+
+
+  const syringe =
+    byId("mSyr").value;
+
+
+  const proportion =
+    byId("mProp").value.trim();
+
+
+  const time =
+    byId("mTime").value;
+
+
+  const sample =
+    byId("mSample").value.trim();
+
+
+  if (
+    !file ||
+    !device ||
+    !concentration ||
+    !syringe ||
+    !proportion ||
+    !time ||
+    !sample
+  ) {
+
+    showMessage(
+      "microMsg",
+      "Preencha todos os campos da imagem.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  if (!file.type.startsWith("image/")) {
+
+    showMessage(
+      "microMsg",
+      "O arquivo precisa ser uma imagem.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  /*
+     Nome seguro do arquivo
+  */
+
+  const safeName =
+    Date.now() +
+    "_" +
+    file.name.replace(
+      /[^a-zA-Z0-9._-]/g,
+      "_"
+    );
+
+
+  /*
+     Caminho no Storage
+  */
+
+  const folderDevice =
+    device.replace(
+      /[^a-zA-Z0-9_-]/g,
+      "_"
+    );
+
+
+  const folderCon =
+    concentration
+      .replace(",", "_")
+      .replace("%", "");
+
+
+  const folderSyringe =
+    syringe.replace(
+      /[^a-zA-Z0-9_-]/g,
+      "_"
+    );
+
+
+  const folderProp =
+    proportion.replace(
+      /[^a-zA-Z0-9:._-]/g,
+      "_"
+    );
+
+
+  const path =
+    `${folderDevice}/` +
+    `${folderCon}/` +
+    `${folderSyringe}/` +
+    `${folderProp}/` +
+    `${time}s/` +
+    `amostra-${sample}/` +
+    `${safeName}`;
+
+
+  showMessage(
+    "microMsg",
+    "Enviando imagem..."
+  );
+
+
+  const upload =
+    await sb
+      .storage
+      .from("microscopy")
+      .upload(
+        path,
+        file,
+        {
+          upsert:false
+        }
+      );
+
+
+  if (upload.error) {
+
+    console.error(
+      upload.error
+    );
+
+    showMessage(
+      "microMsg",
+      upload.error.message,
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  /*
+     Salvar metadados no banco
+  */
+
+  const insert =
+    await sb
+      .from("microscopy_images")
+      .insert({
+
+        device:device,
+
+        concentration:
+          concentration,
+
+        syringe_config:
+          syringe,
+
+        proportion:
+          proportion,
+
+        collection_time_seconds:
+          Number(time),
+
+        sample:
+          sample,
+
+        image_path:
+          path
+
+      });
+
+
+  if (insert.error) {
+
+    await sb
+      .storage
+      .from("microscopy")
+      .remove([
+        path
+      ]);
+
+
+    showMessage(
+      "microMsg",
+      insert.error.message,
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  showMessage(
+    "microMsg",
+    "Imagem cadastrada com sucesso."
+  );
+
+
+  byId("mFile").value = "";
+
+  byId("mProp").value = "";
+
+  byId("mTime").value = "";
+
+  byId("mSample").value = "";
+
+
+  await loadData();
+
+}
+
+
+
+/* ==============================================================
+   SALVAR MEIA-VIDA
+   ============================================================== */
+
+async function saveHalf() {
+
+  if (currentRole !== "admin") {
+
+    return;
+
+  }
+
+
+  if (!sb) {
+
+    showMessage(
+      "halfMsg",
+      "Configure o Supabase antes de cadastrar dados.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  const device =
+    byId("xDev").value;
+
+
+  const concentration =
+    byId("xCon").value;
+
+
+  const syringe =
+    byId("xSyr").value;
+
+
+  const proportion =
+    byId("xProp").value.trim();
+
+
+  const halfLife =
+    Number(
+      byId("xHalf").value
+    );
+
+
+  const operator =
+    byId("xOp").value.trim();
+
+
+  const laboratory =
+    byId("xLab").value.trim();
+
+
+  if (
+    !device ||
+    !concentration ||
+    !syringe ||
+    !proportion ||
+    !halfLife ||
+    !operator
+  ) {
+
+    showMessage(
+      "halfMsg",
+      "Preencha dispositivo, concentração, seringa, proporção, meia-vida e operador.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  const data = {
+
+    device:
+
+      device,
+
+    concentration:
+
+      concentration,
+
+    syringe_config:
+
+      syringe,
+
+    proportion:
+
+      proportion,
+
+    half_life_seconds:
+
+      halfLife,
+
+    operator:
+
+      operator,
+
+    laboratory:
+
+      laboratory || null
+
+  };
+
+
+  const result =
+    await sb
+      .from("half_life_tests")
+      .insert(data);
+
+
+  if (result.error) {
+
+    showMessage(
+      "halfMsg",
+      result.error.message,
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  showMessage(
+    "halfMsg",
+    "Medição cadastrada com sucesso."
+  );
+
+
+  byId("xProp").value = "";
+
+  byId("xHalf").value = "";
+
+  byId("xOp").value = "";
+
+  byId("xLab").value = "";
+
+
+  await loadData();
+
+}
+
+
+
+/* ==============================================================
+   IMPORTAR EXCEL
+   ============================================================== */
+
+function importExcel(event) {
+
+  if (currentRole !== "admin") {
+
+    return;
+
+  }
+
+
+  if (!sb) {
+
+    showMessage(
+      "halfMsg",
+      "Configure o Supabase antes de importar.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  const file =
+    event.target.files[0];
+
+
+  if (!file) {
+
+    return;
+
+  }
+
+
+  const reader =
+    new FileReader();
+
+
+  reader.onload =
+    async function(e) {
+
+      try {
+
+        const workbook =
+          XLSX.read(
+            new Uint8Array(
+              e.target.result
+            ),
+            {
+              type:"array"
+            }
+          );
+
+
+        const sheet =
+          workbook.Sheets[
+            workbook.SheetNames[0]
+          ];
+
+
+        const rows =
+          XLSX.utils.sheet_to_json(
+            sheet,
+            {
+              defval:""
+            }
+          );
+
+
+        if (!rows.length) {
+
+          showMessage(
+            "halfMsg",
+            "A planilha não possui dados.",
+            "error"
+          );
+
+          return;
+
+        }
+
+
+        /*
+           Normalização dos nomes das colunas
+        */
+
+        function normalizeColumn(name) {
+
+          return String(name)
+            .normalize("NFD")
+            .replace(
+              /[\u0300-\u036f]/g,
+              ""
+            )
+            .toLowerCase()
+            .trim();
+
+        }
+
+
+        const validRows = [];
+
+
+        rows.forEach(
+          row => {
+
+            const normalized = {};
+
+
+            Object.keys(row)
+              .forEach(
+                key => {
+
+                  normalized[
+                    normalizeColumn(key)
+                  ] =
+                    row[key];
+
+                }
+              );
+
+
+            const device =
+              String(
+                normalized["dispositivo"] ||
+                normalized["device"] ||
+                ""
+              ).trim();
+
+
+            const concentration =
+              String(
+                normalized["concentracao"] ||
+                normalized["concentracao (%)"] ||
+                normalized["concentration"] ||
+                ""
+              ).trim();
+
+
+            const halfLife =
+              Number(
+                normalized["tempo de meia-vida"] ||
+                normalized["tempo de meia vida"] ||
+                normalized["meia-vida"] ||
+                normalized["meia vida"] ||
+                normalized["half_life_seconds"] ||
+                0
+              );
+
+
+            const operator =
+              String(
+                normalized["operador"] ||
+                normalized["operator"] ||
+                ""
+              ).trim();
+
+
+            const syringe =
+              String(
+                normalized["configuracao da seringa"] ||
+                normalized["configuracao seringa"] ||
+                normalized["syringe_config"] ||
+                "10 ml / 10 ml"
+              ).trim();
+
+
+            const proportion =
+              String(
+                normalized["proporcao"] ||
+                normalized["proportion"] ||
+                ""
+              ).trim();
+
+
+            const laboratory =
+              String(
+                normalized["laboratorio"] ||
+                normalized["laboratory"] ||
+                ""
+              ).trim();
+
+
+            if (
+              device &&
+              concentration &&
+              halfLife > 0 &&
+              operator &&
+              proportion
+            ) {
+
+              validRows.push({
+
+                device:
+                  device,
+
+                concentration:
+                  concentration,
+
+                syringe_config:
+                  syringe,
+
+                proportion:
+                  proportion,
+
+                half_life_seconds:
+                  halfLife,
+
+                operator:
+                  operator,
+
+                laboratory:
+                  laboratory || null
+
+              });
+
+            }
+
+          }
+        );
+
+
+        if (!validRows.length) {
+
+          showMessage(
+            "halfMsg",
+            "Nenhuma linha válida foi encontrada no Excel.",
+            "error"
+          );
+
+          return;
+
+        }
+
+
+        /*
+           Inserção em lote
+        */
+
+        const result =
+          await sb
+            .from("half_life_tests")
+            .insert(validRows);
+
+
+        if (result.error) {
+
+          showMessage(
+            "halfMsg",
+            result.error.message,
+            "error"
+          );
+
+          return;
+
+        }
+
+
+        showMessage(
+          "halfMsg",
+          `${validRows.length} medições importadas com sucesso.`
+        );
+
+
+        event.target.value = "";
+
+
+        await loadData();
+
+      }
+
+      catch(error) {
+
+        console.error(error);
+
+        showMessage(
+          "halfMsg",
+          "Erro ao ler o Excel: " +
+          error.message,
+          "error"
+        );
+
+      }
+
+    };
+
+
+  reader.readAsArrayBuffer(file);
+
+}
+
+
+
+/* ==============================================================
+   MEIA-VIDA — AGRUPAMENTO
+   ============================================================== */
+
+function getHalfLifeAggregatedData() {
+
+  const concentration =
+    byId("hCon").value;
+
+
+  const selectedDevice =
+    byId("hDev").value;
+
+
+  const selectedSyringe =
+    byId("hSyr").value;
+
+
+  const selectedProportion =
+    byId("hProp").value;
+
+
+  let rows =
+    halfRows.filter(
+      row =>
+        String(row.concentration) ===
+        String(concentration)
+    );
+
+
+  if (
+    selectedDevice !==
+    "Todos"
+  ) {
+
+    rows =
+      rows.filter(
+        row =>
+          row.device ===
+          selectedDevice
+      );
+
+  }
+
+
+  if (
+    selectedSyringe !==
+    "Todos"
+  ) {
+
+    rows =
+      rows.filter(
+        row =>
+          String(
+            row.syringe_config || ""
+          ) ===
+          String(selectedSyringe)
+      );
+
+  }
+
+
+  if (
+    selectedProportion !==
+    "Todos"
+  ) {
+
+    rows =
+      rows.filter(
+        row =>
+          String(
+            row.proportion || ""
+          ) ===
+          String(selectedProportion)
+      );
+
+  }
+
+
+  /*
+     Agrupamento:
+
+     dispositivo
+     +
+     concentração
+     +
+     operador
+     +
+     seringa
+     +
+     proporção
+  */
+
+  const groups = {};
+
+
+  rows.forEach(
+    row => {
+
+      const key =
+        [
+          row.device,
+          row.operator,
+          row.syringe_config || "",
+          row.proportion || ""
+        ].join("|||");
+
+
+      if (!groups[key]) {
+
+        groups[key] = [];
+
+      }
+
+
+      groups[key].push(row);
+
+    }
+  );
+
+
+  return Object.values(groups)
+    .map(
+      group => {
+
+        const values =
+          group.map(
+            row =>
+              Number(
+                row.half_life_seconds
+              )
+          );
+
+
+        const sum =
+          values.reduce(
+            (total, value) =>
+              total + value,
+            0
+          );
+
+
+        const mean =
+          sum /
+          values.length;
+
+
+        return {
+
+          device:
+            group[0].device,
+
+          operator:
+            group[0].operator,
+
+          syringe:
+            group[0].syringe_config || "",
+
+          proportion:
+            group[0].proportion || "",
+
+          mean:
+            mean,
+
+          n:
+            values.length
+
+        };
+
+      }
+    )
+    .sort(
+      (a,b) =>
+        a.mean - b.mean
+    );
+
+}
+
+
+
+/* ==============================================================
+   MEIA-VIDA — PROPORÇÕES DISPONÍVEIS
+   ============================================================== */
+
+function updateHalfProportions() {
+
+  const concentration =
+    byId("hCon").value;
+
+
+  const device =
+    byId("hDev").value;
+
+
+  const syringe =
+    byId("hSyr").value;
+
+
+  let rows =
+    halfRows.filter(
+      row =>
+        String(row.concentration) ===
+        String(concentration)
+    );
+
+
+  if (
+    device !== "Todos"
+  ) {
+
+    rows =
+      rows.filter(
+        row =>
+          row.device ===
+          device
+      );
+
+  }
+
+
+  if (
+    syringe !== "Todos"
+  ) {
+
+    rows =
+      rows.filter(
+        row =>
+          String(
+            row.syringe_config || ""
+          ) ===
+          String(syringe)
+      );
+
+  }
+
+
+  const proportions =
+    uniqueValues(
+      rows.map(
+        row =>
+          row.proportion
+      )
+    );
+
+
+  const oldValue =
+    byId("hProp").value;
+
+
+  setOptions(
+    "hProp",
+    [
+      "Todos",
+      ...proportions
+    ],
+    oldValue
+  );
+
+}
+
+
+
+/* ==============================================================
+   RENDER MEIA-VIDA
+   ============================================================== */
+
+function renderHalf() {
+
+  if (
+    !byId("hCon")
+  ) {
+
+    return;
+
+  }
+
+
+  updateHalfProportions();
+
+
+  const data =
+    getHalfLifeAggregatedData();
+
+
+  const canvas =
+    byId("halfChart");
+
+
+  if (halfChart) {
+
+    halfChart.destroy();
+
+    halfChart =
+      null;
+
+  }
+
+
+  const labels =
+    data.map(
+      row =>
+        `${row.device} — ${row.operator}`
+    );
+
+
+  const values =
+    data.map(
+      row =>
+        Number(
+          row.mean.toFixed(2)
+        )
+    );
+
+
+  halfChart =
+    new Chart(
+      canvas,
+      {
+
+        type:"bar",
+
+        data: {
+
+          labels:
+
+            labels,
+
+          datasets: [
+
+            {
+
+              label:
+                "Meia-vida média (s)",
+
+              data:
+                values
+
+            }
+
+          ]
+
+        },
+
+        options: {
+
+          responsive:true,
+
+          maintainAspectRatio:false,
+
+          plugins: {
+
+            title: {
+
+              display:true,
+
+              text:
+                `Meia-vida · ${byId("hCon").value}`
+
+            },
+
+            tooltip: {
+
+              callbacks: {
+
+                afterLabel:
+                  function(context) {
+
+                    const item =
+                      data[
+                        context.dataIndex
+                      ];
+
+                    return (
+                      `N = ${item.n} amostras`
+                    );
+
+                  }
+
+              }
+
+            }
+
+          },
+
+          scales: {
+
+            y: {
+
+              beginAtZero:true,
+
+              title: {
+
+                display:true,
+
+                text:
+                  "Tempo de meia-vida (s)"
+
+              }
+
+            }
+
+          }
+
+        }
+
+      }
+    );
+
+
+  /*
+     MÉTRICAS
+  */
+
+  const totalSamples =
+    data.reduce(
+      (total,item) =>
+        total + item.n,
+      0
+    );
+
+
+  const numberOfGroups =
+    data.length;
+
+
+  const averageAll =
+    data.length
+      ? data.reduce(
+          (total,item) =>
+            total +
+            item.mean,
+          0
+        ) /
+        data.length
+      : 0;
+
+
+  byId("halfMetrics")
+    .innerHTML =
+
+    `
+      <div class="metric">
+
+        <div class="metric-value">
+          ${numberOfGroups}
+        </div>
+
+        <div class="metric-label">
+          Condições consolidadas
+        </div>
+
+      </div>
+
+
+      <div class="metric">
+
+        <div class="metric-value">
+          ${totalSamples}
+        </div>
+
+        <div class="metric-label">
+          Amostras consideradas
+        </div>
+
+      </div>
+
+
+      <div class="metric">
+
+        <div class="metric-value">
+          ${averageAll
+            ? averageAll.toFixed(1)
+            : "—"} s
+        </div>
+
+        <div class="metric-label">
+          Média das médias
+        </div>
+
+      </div>
+    `;
+
+
+  /*
+     TABELA
+  */
+
+  if (!data.length) {
+
+    byId("halfTable").innerHTML =
+      `
+        <div class="info">
+          Nenhum resultado encontrado
+          para os filtros selecionados.
+        </div>
+      `;
+
+    return;
+
+  }
+
+
+  byId("halfTable").innerHTML =
+
+    `
+      <table>
+
+        <thead>
+
+          <tr>
+
+            <th>
+              Dispositivo
+            </th>
+
+            <th>
+              Operador
+            </th>
+
+            <th>
+              Seringa
+            </th>
+
+            <th>
+              Proporção
+            </th>
+
+            <th>
+              Média (s)
+            </th>
+
+            <th>
+              N de amostras
+            </th>
+
+          </tr>
+
+        </thead>
+
+
+        <tbody>
+
+          ${
+            data
+              .map(
+                item =>
+
+                `
+                  <tr>
+
+                    <td>
+                      ${escapeHTML(
+                        item.device
+                      )}
+                    </td>
+
+                    <td>
+                      ${escapeHTML(
+                        item.operator
+                      )}
+                    </td>
+
+                    <td>
+                      ${escapeHTML(
+                        item.syringe
+                      )}
+                    </td>
+
+                    <td>
+                      ${escapeHTML(
+                        item.proportion
+                      )}
+                    </td>
+
+                    <td>
+                      ${item.mean.toFixed(1)}
+                    </td>
+
+                    <td>
+                      ${item.n}
+                    </td>
+
+                  </tr>
+                `
+              )
+              .join("")
+          }
+
+        </tbody>
+
+      </table>
+    `;
+
+}
+
+
+
+/* ==============================================================
+   EXPORTAR EXCEL
+   ============================================================== */
+
+function exportHalfExcel() {
+
+  const data =
+    getHalfLifeAggregatedData();
+
+
+  if (!data.length) {
+
+    alert(
+      "Não existem dados para exportar."
+    );
+
+    return;
+
+  }
+
+
+  const rows =
+    data.map(
+      item => ({
+
+        Dispositivo:
+          item.device,
+
+        Operador:
+          item.operator,
+
+        "Configuração da seringa":
+          item.syringe,
+
+        Proporção:
+          item.proportion,
+
+        "Média de meia-vida (s)":
+          Number(
+            item.mean.toFixed(2)
+          ),
+
+        "N de amostras":
+          item.n
+
+      })
+    );
+
+
+  const worksheet =
+    XLSX.utils.json_to_sheet(
+      rows
+    );
+
+
+  const workbook =
+    XLSX.utils.book_new();
+
+
+  XLSX.utils.book_append_sheet(
+    workbook,
+    worksheet,
+    "Resumo"
+  );
+
+
+  /*
+     Também exporta os dados individuais
+  */
+
+  const individual =
+    halfRows
+      .filter(
+        row =>
+          String(
+            row.concentration
+          ) ===
+          String(
+            byId("hCon").value
+          )
+      )
+      .map(
+        row => ({
+
+          Dispositivo:
+            row.device,
+
+          Concentração:
+            row.concentration,
+
+          "Configuração da seringa":
+            row.syringe_config,
+
+          Proporção:
+            row.proportion,
+
+          "Tempo de meia-vida (s)":
+            row.half_life_seconds,
+
+          Operador:
+            row.operator,
+
+          Laboratório:
+            row.laboratory || ""
+
+        })
+      );
+
+
+  const worksheetIndividual =
+    XLSX.utils.json_to_sheet(
+      individual
+    );
+
+
+  XLSX.utils.book_append_sheet(
+    workbook,
+    worksheetIndividual,
+    "Dados individuais"
+  );
+
+
+  XLSX.writeFile(
+    workbook,
+    `MSB_meia_vida_${byId("hCon").value}.xlsx`
+  );
+
+}
+
+
+
+/* ==============================================================
+   EXPORTAR PDF
+   ============================================================== */
+
+function exportHalfPDF() {
+
+  const data =
+    getHalfLifeAggregatedData();
+
+
+  if (!data.length) {
+
+    alert(
+      "Não existem dados para exportar."
+    );
+
+    return;
+
+  }
+
+
+  const {
+    jsPDF
+  } = window.jspdf;
+
+
+  const pdf =
+    new jsPDF();
+
+
+  pdf.setFontSize(18);
+
+  pdf.setTextColor(
+    7,
+    60,
+    85
+  );
+
+
+  pdf.text(
+    "MSB — Biblioteca",
+    14,
+    18
+  );
+
+
+  pdf.setFontSize(12);
+
+  pdf.setTextColor(
+    70,
+    80,
+    85
+  );
+
+
+  pdf.text(
+    `Análise de meia-vida · ${byId("hCon").value}`,
+    14,
+    28
+  );
+
+
+  pdf.text(
+    `Gerado em ${new Date().toLocaleString("pt-BR")}`,
+    14,
+    36
+  );
+
+
+  pdf.autoTable({
+
+    startY:44,
+
+    head: [
+
+      [
+        "Dispositivo",
+        "Operador",
+        "Seringa",
+        "Proporção",
+        "Média (s)",
+        "N"
+      ]
+
+    ],
+
+    body:
+
+      data.map(
+        item => [
+
+          item.device,
+
+          item.operator,
+
+          item.syringe,
+
+          item.proportion,
+
+          item.mean.toFixed(1),
+
+          item.n
+
+        ]
+      )
+
+  });
+
+
+  pdf.save(
+    `MSB_meia_vida_${byId("hCon").value}.pdf`
+  );
+
+}
+
+
+
+/* ==============================================================
+   ESTATÍSTICAS ADMIN
+   ============================================================== */
+
+function updateAdminStats() {
+
+  if (
+    currentRole !== "admin"
+  ) {
+
+    return;
+
+  }
+
+
+  byId("adminStats").innerHTML =
+
+    `
+      <div class="grid-3">
+
+        <div class="metric">
+
+          <div class="metric-value">
+            ${microRows.length}
+          </div>
+
+          <div class="metric-label">
+            Imagens de microscopia
+          </div>
+
+        </div>
+
+
+        <div class="metric">
+
+          <div class="metric-value">
+            ${halfRows.length}
+          </div>
+
+          <div class="metric-label">
+            Medições de meia-vida
+          </div>
+
+        </div>
+
+
+        <div class="metric">
+
+          <div class="metric-value">
+            ${uniqueValues(
+              microRows.map(
+                row =>
+                  row.sample
+              )
+            ).length}
+          </div>
+
+          <div class="metric-label">
+            Identificações de amostras
+          </div>
+
+        </div>
+
+      </div>
+    `;
+
+}
+
+
+
+/* ==============================================================
+   INICIALIZAÇÃO
+   ============================================================== */
+
+window.addEventListener(
+  "load",
+  function() {
+
+    /*
+       A aplicação não exige Supabase para abrir.
+       Isso permite visualizar a interface mesmo
+       antes de configurar o banco.
+    */
+
+  }
+);
+
+
 </script>
+
+
 </body>
 </html>
