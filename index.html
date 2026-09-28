@@ -1514,14 +1514,30 @@ document.addEventListener(
 
 
             /*
-             * Sempre começa mostrando a tela de login.
-             * A sessão antiga é encerrada para evitar
-             * que o navegador pule diretamente para o sistema.
+             * Mantém a sessão no navegador.
+             * Se o usuário já estiver autenticado, não pede a senha
+             * novamente ao atualizar a página.
              */
 
-            await sb.auth.signOut();
+            const sessionResult = await sb.auth.getSession();
 
-            showLoginScreen();
+            if(sessionResult.error){
+                console.error(sessionResult.error);
+                showLoginScreen();
+                return;
+            }
+
+            if(sessionResult.data && sessionResult.data.session && sessionResult.data.session.user){
+
+                currentUser = sessionResult.data.session.user;
+                await finishLogin();
+
+            }
+            else{
+
+                showLoginScreen();
+
+            }
 
         }
         catch(error){
@@ -3762,28 +3778,26 @@ function scientificHalfRows(){
 
 function getScientificSourceColor(source, index){
 
-    const s = String(source || "").trim().toLowerCase();
+    /*
+     * A cor agora pertence à BARRA, e não à fonte/laboratório.
+     * Assim, cada barra recebe uma cor diferente, até 10 barras.
+     * As três primeiras mantêm as cores solicitadas: verde, vermelho e amarelo.
+     */
 
-    if(s.includes("msb")){
-        return "#2e9b57";
-    }
-
-    if(s.includes("belczak")){
-        return "#c93c3c";
-    }
-
-    if(s.includes("literatura")){
-        return "#e5b92f";
-    }
-
-    const fallback = [
-        "#3f83c5",
-        "#8b5fbf",
-        "#e07b39",
-        "#3b9aa0"
+    const barColors = [
+        "#2e9b57", // verde
+        "#c93c3c", // vermelho
+        "#e5b92f", // amarelo
+        "#3f83c5", // azul
+        "#8b5fbf", // roxo
+        "#e07b39", // laranja
+        "#3b9aa0", // azul-petróleo
+        "#d66aa2", // rosa
+        "#6f8f3d", // verde-oliva
+        "#7a5a3a"  // marrom
     ];
 
-    return fallback[index % fallback.length];
+    return barColors[index % barColors.length];
 
 }
 
@@ -3967,8 +3981,7 @@ function renderScientificHalfChart(){
             plugins: {
 
                 legend: {
-                    display: true,
-                    position: "top"
+                    display: false
                 },
 
                 tooltip: {
