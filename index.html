@@ -299,6 +299,30 @@ th{
     font-size:13px;
 }
 
+.scientific-chart-footer{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:16px;
+    margin-top:12px;
+}
+
+.chart-export-btn{
+    white-space:nowrap;
+    flex-shrink:0;
+}
+
+@media(max-width:760px){
+    .scientific-chart-footer{
+        flex-direction:column;
+        align-items:stretch;
+    }
+
+    .chart-export-btn{
+        width:100%;
+    }
+}
+
 
 .data-management-grid{
     display:grid;
@@ -433,6 +457,26 @@ th{
         height:300px;
     }
 }
+
+.chart-scroll{overflow-x:auto}
+.list-tools{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:14px 0}
+.list-tools input[type=text]{flex:1;min-width:200px}
+.chk{display:flex;align-items:center;gap:6px;margin:0;font-weight:600;white-space:nowrap}
+.chk input,.admin-table input[type=checkbox]{width:auto;margin:0}
+.admin-list-scroll{max-height:520px;overflow:auto;border:1px solid #d7e3e9;border-radius:12px}
+.admin-table th{position:sticky;top:0;z-index:1}
+.admin-table td{vertical-align:middle}
+.admin-table tr.sel{background:#fff3f3}
+.admin-thumb{width:64px;height:48px;object-fit:cover;border:1px solid #cbd9df;border-radius:6px;background:#eef2f4;display:block}
+.sql-help{margin-top:14px;font-size:13px}
+.sql-help pre{background:#0f2a38;color:#d8f0ff;padding:14px;border-radius:10px;overflow:auto;font-size:12px}
+.mic-tools{background:#f7fbfd;border:1px solid #d7e5eb;border-radius:14px;padding:16px;margin:14px 0}
+.mic-presets{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.mic-sliders{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.mic-sliders label{display:flex;justify-content:space-between;font-size:12px;margin:0}
+.mic-sliders input[type=range]{padding:0;border:0}
+.compare-panel canvas{width:100%;height:430px;object-fit:contain;background:#f0f3f5;border-radius:12px;margin-top:15px;display:block}
+@media(max-width:800px){.mic-sliders{grid-template-columns:1fr}.compare-panel canvas{height:300px}}
 </style>
 </head>
 
@@ -798,53 +842,20 @@ th{
 
 <!-- RESULTADO -->
 
-<div
-    id="comparisonResult"
-    class="card hidden"
->
-
-    <h2>
-        Comparação
-    </h2>
-
-    <p class="status">
-        Tratamento visual aplicado somente à visualização: redução de brilho, aumento moderado de contraste e nitidez. A imagem original armazenada no Supabase não é alterada.
-    </p>
-
-    <div class="compare-grid">
-
-        <div class="compare-panel">
-
-            <h3>
-                Imagem A
-            </h3>
-
-            <img id="imgA">
-
-            <div
-                id="metaA"
-                class="meta"
-            ></div>
-
-        </div>
-
-        <div class="compare-panel">
-
-            <h3>
-                Imagem B
-            </h3>
-
-            <img id="imgB">
-
-            <div
-                id="metaB"
-                class="meta"
-            ></div>
-
-        </div>
-
-    </div>
-
+<div id="comparisonResult" class="card hidden">
+<h2>Comparação</h2>
+<p class="status">O tratamento é aplicado somente à cópia exibida no navegador, com os mesmos ajustes nas duas imagens. O arquivo original no Supabase nunca é alterado. Áreas totalmente estouradas em branco no arquivo original não têm detalhe a recuperar.</p>
+<div class="mic-tools">
+<div class="mic-presets">
+<button class="btn secondary small" onclick="applyMicPreset('soft')">Suave</button>
+<button class="btn secondary small" onclick="applyMicPreset('strong')">Forte (padrão)</button>
+<button class="btn secondary small" onclick="applyMicPreset('max')">Máximo</button>
+<button class="btn secondary small" id="micOrigBtn" onclick="toggleMicOriginal()">👁 Ver original</button>
+</div>
+<div class="mic-sliders"><div><label>Redução de brilho/glare <span id="micGlareVal"></span></label><input type="range" id="micGlare" min="0" max="100" step="1" oninput="micSliderChanged()"></div><div><label>Brilho <span id="micBrightVal"></span></label><input type="range" id="micBright" min="-40" max="40" step="1" oninput="micSliderChanged()"></div><div><label>Contraste <span id="micContrastVal"></span></label><input type="range" id="micContrast" min="60" max="220" step="1" oninput="micSliderChanged()"></div><div><label>Nitidez <span id="micSharpVal"></span></label><input type="range" id="micSharp" min="0" max="400" step="1" oninput="micSliderChanged()"></div><div><label>Realce de detalhes <span id="micClarityVal"></span></label><input type="range" id="micClarity" min="0" max="150" step="1" oninput="micSliderChanged()"></div><div><label>Saturação <span id="micSatVal"></span></label><input type="range" id="micSat" min="0" max="150" step="1" oninput="micSliderChanged()"></div></div>
+<div id="micTreatStatus" class="status"></div>
+</div>
+<div class="compare-grid"><div class="compare-panel"><h3>Imagem A</h3><canvas id="micCanvasA"></canvas><img id="micFallbackA" class="hidden" style="width:100%;height:430px;object-fit:contain;margin-top:15px"><div id="metaA" class="meta"></div><div class="actions"><button class="btn secondary small" onclick="downloadMicCanvas('A')">⬇️ Baixar A tratada (PNG)</button></div></div><div class="compare-panel"><h3>Imagem B</h3><canvas id="micCanvasB"></canvas><img id="micFallbackB" class="hidden" style="width:100%;height:430px;object-fit:contain;margin-top:15px"><div id="metaB" class="meta"></div><div class="actions"><button class="btn secondary small" onclick="downloadMicCanvas('B')">⬇️ Baixar B tratada (PNG)</button></div></div></div>
 </div>
 
 </section>
@@ -893,15 +904,25 @@ th{
 
         </div>
 
-        <div id="scientificChartStatus" class="chart-selection-status">
-            Selecione a proporção e a concentração para gerar o gráfico.
+        <div class="scientific-chart-footer">
+            <div id="scientificChartStatus" class="chart-selection-status">
+                Selecione a proporção e a concentração para gerar o gráfico.
+            </div>
+
+            <button
+                type="button"
+                id="exportScientificChartPng"
+                class="btn chart-export-btn"
+                onclick="exportScientificHalfChartPNG()"
+                disabled
+            >
+                🖼️ Exportar gráfico PNG
+            </button>
         </div>
 
     </div>
 
-    <div class="chart-wrap">
-        <canvas id="halfScientificChart"></canvas>
-    </div>
+    <div class="chart-scroll"><div class="chart-wrap" id="halfChartWrap"><canvas id="halfScientificChart"></canvas></div></div>
 
 </div>
 
@@ -1513,95 +1534,36 @@ th{
 
 </div>
 
-<!-- =========================== -->
+</div>
+
 <!-- VERIFICAR / APAGAR DADOS -->
-<!-- =========================== -->
-
-<div
-    id="adminData"
-    class="hidden"
->
-
+<div id="adminData" class="hidden">
 <div class="card">
-
-    <h2>
-        Verificar e apagar dados
-    </h2>
-
-    <p class="status">
-        Use esta área para conferir os cadastros e apagar somente uma medida ou uma imagem que tenha sido registrada incorretamente.
-        Ao apagar uma imagem, o registro do banco e o arquivo correspondente no Supabase Storage serão removidos.
-    </p>
-
-    <div class="actions">
-
-        <button
-            class="btn secondary"
-            onclick="loadAdminData()"
-        >
-            🔄 Atualizar dados
-        </button>
-
-        <button
-            class="btn secondary"
-            onclick="scrollToAdminData('half')"
-        >
-            📊 Ir para meia-vida
-        </button>
-
-        <button
-            class="btn secondary"
-            onclick="scrollToAdminData('mic')"
-        >
-            🔬 Ir para microscopia
-        </button>
-
-    </div>
-
-    <div id="adminDataMsg"></div>
-
+<h2>Verificar e apagar dados</h2>
+<p class="status">Marque um ou vários registros e apague. Ao apagar uma microscopia, o arquivo da imagem também é removido do Storage.</p>
+<div class="actions">
+<button class="btn secondary" onclick="loadAdminData()">🔄 Atualizar</button>
+<button class="btn secondary" onclick="scrollToAdminData('half')">📊 Meia-vida</button>
+<button class="btn secondary" onclick="scrollToAdminData('mic')">🔬 Microscopia</button>
 </div>
-
-
+<div id="adminDataMsg"></div>
+<details class="sql-help"><summary>Não consegue apagar? Ver SQL de permissão (Supabase)</summary>
+<pre id="adminSqlBox"></pre><button class="btn secondary small" onclick="copyAdminSql()">Copiar SQL</button></details>
+</div>
 <div class="card" id="adminHalfDataCard">
-
-    <div class="section-title">
-
-        <h2>
-            Medidas de meia-vida cadastradas
-        </h2>
-
-        <span class="status" id="adminHalfCount"></span>
-
-    </div>
-
-    <div
-        id="adminHalfDataList"
-        class="data-management-grid"
-    ></div>
-
+<div class="section-title"><h2>Meia-vida cadastrada</h2><span class="status" id="adminHalfCount"></span></div>
+<div class="list-tools"><input type="text" id="adminHalfSearch" placeholder="Buscar por dispositivo, concentração, laboratório..." oninput="renderAdminData('half')">
+<label class="chk"><input type="checkbox" id="adminHalfAll" onchange="toggleAdminAll('half',this)"> Selecionar todos</label>
+<button id="adminHalfDelSel" class="btn danger small" onclick="deleteSelected('half')" disabled>🗑️ Apagar selecionados (0)</button></div>
+<div id="adminHalfDataList" class="table-wrap admin-list-scroll"></div>
 </div>
-
-
 <div class="card" id="adminMicDataCard">
-
-    <div class="section-title">
-
-        <h2>
-            Imagens de microscopia cadastradas
-        </h2>
-
-        <span class="status" id="adminMicCount"></span>
-
-    </div>
-
-    <div
-        id="adminMicDataList"
-        class="data-management-grid"
-    ></div>
-
+<div class="section-title"><h2>Microscopia cadastrada</h2><span class="status" id="adminMicCount"></span></div>
+<div class="list-tools"><input type="text" id="adminMicSearch" placeholder="Buscar por dispositivo, concentração, amostra..." oninput="renderAdminData('mic')">
+<label class="chk"><input type="checkbox" id="adminMicAll" onchange="toggleAdminAll('mic',this)"> Selecionar todos</label>
+<button id="adminMicDelSel" class="btn danger small" onclick="deleteSelected('mic')" disabled>🗑️ Apagar selecionados (0)</button></div>
+<div id="adminMicDataList" class="table-wrap admin-list-scroll"></div>
 </div>
-
 </div>
 
 </section>
@@ -1628,6 +1590,13 @@ const ADMIN_EMAIL =
 const USER_EMAIL =
     "biblioteca@msb.local";
 
+/*
+ * As senhas não ficam gravadas neste arquivo.
+ * O campo único de senha é validado pelo Supabase Auth.
+ * A conta admin e a conta de usuário são diferenciadas
+ * pelo perfil salvo em public.profiles.
+ */
+
 
 /* ============================================================
    VARIÁVEIS
@@ -1646,6 +1615,38 @@ let halfRows = [];
 let halfChart = null;
 
 let halfScientificChart = null;
+
+
+/* ============================================================
+   PLUGIN DO GRÁFICO DE MEIA-VIDA
+   Mostra o valor numérico acima de cada barra e mantém o fundo
+   branco para que o PNG exportado fique pronto para apresentação.
+   ============================================================ */
+
+const halfLifeValuePlugin = {
+    id:"halfLifeValuePlugin",
+    beforeDraw:function(chart){
+        const ctx=chart.ctx;
+        ctx.save();ctx.fillStyle="#ffffff";ctx.fillRect(0,0,chart.width,chart.height);ctx.restore();
+    },
+    afterDatasetsDraw:function(chart){
+        const ds=chart.data.datasets[0];
+        if(!ds){return;}
+        const meta=chart.getDatasetMeta(0),ctx=chart.ctx;
+        ctx.save();ctx.textAlign="center";ctx.textBaseline="bottom";
+        meta.data.forEach(function(bar,i){
+            const v=Number(ds.data[i]);
+            if(!Number.isFinite(v)){return;}
+            ctx.font="700 13px Arial, sans-serif";ctx.fillStyle="#073f5d";
+            ctx.fillText(v.toLocaleString("pt-BR",{minimumFractionDigits:2,maximumFractionDigits:2})+" s",bar.x,bar.y-6);
+            if(ds.ns&&ds.ns[i]){
+                ctx.font="11px Arial, sans-serif";ctx.fillStyle="#647b87";
+                ctx.fillText("N="+ds.ns[i],bar.x,bar.y-21);
+            }
+        });
+        ctx.restore();
+    }
+};
 
 
 /* ============================================================
@@ -1879,53 +1880,45 @@ async function finishLogin(){
 
             /*
              * Fallback pelo e-mail.
-             * Serve para o sistema continuar funcionando
-             * caso a tabela profiles ainda não tenha sido
-             * carregada corretamente.
+             * O login continua funcionando mesmo se o perfil
+             * ainda não estiver disponível na tabela profiles.
              */
-
-            if(
-                currentUser.email === ADMIN_EMAIL
-            ){
-
+            if(currentUser.email === ADMIN_EMAIL){
                 currentRole = "admin";
-
+            }
+            else if(currentUser.email === USER_EMAIL){
+                currentRole = "user";
             }
             else{
-
-                currentRole = "user";
-
+                throw new Error("Usuário autenticado sem perfil de acesso cadastrado.");
             }
 
         }
-        else if(
-            response.data &&
-            response.data.role
-        ){
+        else if(response.data && response.data.role){
 
-            currentRole =
-                response.data.role;
+            currentRole = response.data.role;
 
         }
         else{
 
             /*
-             * Se não houver perfil, usa o e-mail.
+             * Se não houver perfil, usa a conta autenticada.
+             * As contas válidas são definidas pelo próprio fluxo
+             * de login (administrador ou usuário comum).
              */
-
-            if(
-                currentUser.email === ADMIN_EMAIL
-            ){
-
+            if(currentUser.email === ADMIN_EMAIL){
                 currentRole = "admin";
-
+            }
+            else if(currentUser.email === USER_EMAIL){
+                currentRole = "user";
             }
             else{
-
-                currentRole = "user";
-
+                throw new Error("Usuário autenticado sem perfil de acesso cadastrado.");
             }
+        }
 
+        if(currentRole !== "admin" && currentRole !== "user"){
+            throw new Error("Perfil de acesso inválido.");
         }
 
 
@@ -2325,459 +2318,172 @@ async function loadAllData(){
 
 
 /* ============================================================
-   ADMINISTRADOR - VERIFICAR / APAGAR DADOS
+   ADMINISTRADOR - LISTAS PARA VERIFICAR / APAGAR
    ============================================================ */
 
+const ADMIN_SQL = `-- Rode no SQL Editor do Supabase (uma vez)
+grant delete on table public.half_life_tests to authenticated;
+grant delete on table public.microscopy_images to authenticated;
+
+drop policy if exists "admin apaga meia-vida" on public.half_life_tests;
+create policy "admin apaga meia-vida" on public.half_life_tests for delete to authenticated
+  using (exists (select 1 from public.profiles p where p.id = auth.uid() and p.role = 'admin'));
+
+drop policy if exists "admin apaga microscopia" on public.microscopy_images;
+create policy "admin apaga microscopia" on public.microscopy_images for delete to authenticated
+  using (exists (select 1 from public.profiles p where p.id = auth.uid() and p.role = 'admin'));
+
+drop policy if exists "admin apaga arquivos microscopia" on storage.objects;
+create policy "admin apaga arquivos microscopia" on storage.objects for delete to authenticated
+  using (bucket_id = 'microscopy' and exists (select 1 from public.profiles p where p.id = auth.uid() and p.role = 'admin'));`;
+
+const adminSel = {half:new Set(), mic:new Set()};
+
 function scrollToAdminData(type){
-
-    const target =
-        type === "half"
-        ? "adminHalfDataCard"
-        : "adminMicDataCard";
-
-    document
-        .getElementById(target)
-        ?.scrollIntoView({
-            behavior:"smooth",
-            block:"start"
-        });
-
+    const el=document.getElementById(type==="half"?"adminHalfDataCard":"adminMicDataCard");
+    if(el){el.scrollIntoView({behavior:"smooth",block:"start"});}
 }
 
+function copyAdminSql(){
+    if(navigator.clipboard){navigator.clipboard.writeText(ADMIN_SQL);}
+    adminMsg("ok","SQL copiado. Cole no SQL Editor do Supabase e execute.");
+}
+
+function adminMsg(kind,html){
+    document.getElementById("adminDataMsg").innerHTML='<div class="alert '+kind+'">'+html+'</div>';
+}
 
 async function loadAdminData(){
-
-    if(currentRole !== "admin"){
-        return;
-    }
-
-    const halfList =
-        document.getElementById("adminHalfDataList");
-
-    const micList =
-        document.getElementById("adminMicDataList");
-
-    if(!halfList || !micList){
-        return;
-    }
-
-    halfList.innerHTML =
-        '<div class="status">Carregando medidas de meia-vida...</div>';
-
-    micList.innerHTML =
-        '<div class="status">Carregando imagens de microscopia...</div>';
-
+    if(currentRole!=="admin"){return;}
+    document.getElementById("adminSqlBox").textContent=ADMIN_SQL;
+    adminMsg("warn","Carregando dados...");
     try{
-
-        const halfResult =
-            await sb
-                .from("half_life_tests")
-                .select("*")
-                .order("created_at",{ascending:false});
-
-        if(halfResult.error){
-            throw halfResult.error;
-        }
-
-        const micResult =
-            await sb
-                .from("microscopy_images")
-                .select("*")
-                .order("created_at",{ascending:false});
-
-        if(micResult.error){
-            throw micResult.error;
-        }
-
-        halfRows = halfResult.data || [];
-        microscopyRows = micResult.data || [];
-
-        loadHalfFilters();
-        loadComparisonOptions();
-
-        renderAdminHalfData();
-        await renderAdminMicroscopyData();
-
-        document.getElementById("adminDataMsg").innerHTML =
-            '<div class="alert ok">Dados atualizados.</div>';
-
-    }
-    catch(error){
-
-        console.error(error);
-
-        document.getElementById("adminDataMsg").innerHTML =
-            '<div class="alert error">Erro ao carregar dados: ' +
-            escapeHtml(error.message) +
-            '</div>';
-
-    }
-
-}
-
-
-function renderAdminHalfData(){
-
-    const container =
-        document.getElementById("adminHalfDataList");
-
-    const count =
-        document.getElementById("adminHalfCount");
-
-    if(!container){
-        return;
-    }
-
-    if(count){
-        count.textContent =
-            halfRows.length +
-            (halfRows.length === 1 ? " medida" : " medidas");
-    }
-
-    if(!halfRows.length){
-
-        container.innerHTML =
-            '<div class="status">Nenhuma medida de meia-vida cadastrada.</div>';
-
-        return;
-    }
-
-    container.innerHTML =
-        halfRows.map(function(row){
-
-            const date =
-                row.created_at
-                ? new Date(row.created_at).toLocaleString("pt-BR")
-                : "";
-
-            return (
-                '<div class="data-record">' +
-
-                    '<div class="data-record-header">' +
-
-                        '<div>' +
-
-                            '<div class="data-record-title">' +
-                                escapeHtml(row.device) +
-                                ' • ' +
-                                escapeHtml(row.concentration) +
-                                ' • ' +
-                                escapeHtml(row.proportion) +
-                            '</div>' +
-
-                            '<div class="data-record-meta">' +
-
-                                '<b>Meia-vida:</b> ' +
-                                Number(row.half_life_seconds).toFixed(2) +
-                                ' s &nbsp; | &nbsp; ' +
-
-                                '<b>Seringa:</b> ' +
-                                escapeHtml(row.syringe_config) +
-                                '<br>' +
-
-                                '<b>Laboratório:</b> ' +
-                                escapeHtml(row.laboratory || "—") +
-                                ' &nbsp; | &nbsp; ' +
-
-                                '<b>Operador:</b> ' +
-                                escapeHtml(row.operator || "—") +
-                                '<br>' +
-
-                                '<b>Cadastrado em:</b> ' +
-                                escapeHtml(date) +
-
-                            '</div>' +
-
-                        '</div>' +
-
-                        '<button ' +
-                            'class="btn danger small" ' +
-                            'onclick="deleteHalfLife(' +
-                                Number(row.id) +
-                            ')"' +
-                        '>' +
-                            '🗑️ Apagar medida' +
-                        '</button>' +
-
-                    '</div>' +
-
-                '</div>'
-            );
-
-        }).join("");
-
-}
-
-
-async function deleteHalfLife(id){
-
-    if(currentRole !== "admin"){
-        return;
-    }
-
-    const row =
-        halfRows.find(function(item){
-            return Number(item.id) === Number(id);
-        });
-
-    if(!row){
-        return;
-    }
-
-    const description =
-        row.device +
-        " • " +
-        row.concentration +
-        " • " +
-        row.proportion +
-        " • " +
-        Number(row.half_life_seconds).toFixed(2) +
-        " s";
-
-    if(!window.confirm(
-        "Apagar esta medida de meia-vida?\n\n" +
-        description +
-        "\n\nEssa ação não pode ser desfeita."
-    )){
-        return;
-    }
-
-    try{
-
-        document.getElementById("adminDataMsg").innerHTML =
-            '<div class="alert warn">Apagando medida...</div>';
-
-        const result =
-            await sb
-                .from("half_life_tests")
-                .delete()
-                .eq("id", Number(id));
-
-        if(result.error){
-            throw result.error;
-        }
-
         await loadAllData();
-        renderAdminHalfData();
-
-        document.getElementById("adminDataMsg").innerHTML =
-            '<div class="alert ok">Medida apagada com sucesso.</div>';
-
+        adminSel.half.clear();adminSel.mic.clear();
+        renderAdminData("half");
+        await renderAdminData("mic");
+        document.getElementById("adminDataMsg").innerHTML="";
+    }catch(e){
+        console.error(e);
+        adminMsg("error","Erro ao carregar dados: "+escapeHtml(e.message));
     }
-    catch(error){
-
-        console.error(error);
-
-        document.getElementById("adminDataMsg").innerHTML =
-            '<div class="alert error">Não foi possível apagar a medida: ' +
-            escapeHtml(error.message) +
-            '</div>';
-
-    }
-
 }
 
+function renderAdminHalfData(){return renderAdminData("half");}
+function renderAdminMicroscopyData(){return renderAdminData("mic");}
 
-async function renderAdminMicroscopyData(){
-
-    const container =
-        document.getElementById("adminMicDataList");
-
-    const count =
-        document.getElementById("adminMicCount");
-
-    if(!container){
-        return;
+async function renderAdminData(type){
+    const isHalf=type==="half";
+    const T=isHalf?"Half":"Mic";
+    const all=isHalf?halfRows:microscopyRows;
+    const q=(document.getElementById("admin"+T+"Search").value||"").trim().toLowerCase();
+    const rows=all.filter(function(r){return !q||Object.values(r).join(" ").toLowerCase().includes(q);});
+    const box=document.getElementById("admin"+T+"DataList");
+    document.getElementById("admin"+T+"Count").textContent=
+        rows.length+(rows.length!==all.length?" de "+all.length:"")+(isHalf?" medida(s)":" imagem(ns)");
+    if(!rows.length){
+        box.innerHTML='<div class="status" style="padding:14px">Nenhum registro encontrado.</div>';
+        updateAdminSel(type);return;
     }
-
-    if(count){
-        count.textContent =
-            microscopyRows.length +
-            (microscopyRows.length === 1 ? " imagem" : " imagens");
+    const fmt=function(v){return v?new Date(v).toLocaleDateString("pt-BR"):"";};
+    const chk=function(r){return '<td><input type="checkbox" data-id="'+escapeHtml(r.id)+'" '+(adminSel[type].has(String(r.id))?"checked ":"")+'onchange="toggleAdminRow(\''+type+'\',this)"></td>';};
+    const del=function(r){return '<td><button class="btn danger small" data-id="'+escapeHtml(r.id)+'" onclick="deleteAdminRows(\''+type+'\',[this.dataset.id])">🗑️ Apagar</button></td>';};
+    if(isHalf){
+        box.innerHTML='<table class="admin-table"><thead><tr><th></th><th>Dispositivo</th><th>Conc.</th><th>Prop.</th><th>Seringa</th><th>Meia-vida</th><th>Laboratório</th><th>Operador</th><th>Data</th><th></th></tr></thead><tbody>'+
+        rows.map(function(r){return '<tr class="'+(adminSel.half.has(String(r.id))?"sel":"")+'">'+chk(r)+
+            '<td>'+escapeHtml(r.device)+'</td><td>'+escapeHtml(r.concentration)+'</td><td>'+escapeHtml(r.proportion)+'</td><td>'+escapeHtml(r.syringe_config)+
+            '</td><td><b>'+Number(r.half_life_seconds).toFixed(2)+' s</b></td><td>'+escapeHtml(r.laboratory||"—")+'</td><td>'+escapeHtml(r.operator||"—")+'</td><td>'+fmt(r.created_at)+'</td>'+del(r)+'</tr>';}).join("")+'</tbody></table>';
+    }else{
+        box.innerHTML='<table class="admin-table"><thead><tr><th></th><th>Imagem</th><th>Dispositivo</th><th>Conc.</th><th>Prop.</th><th>Seringa</th><th>Tempo</th><th>Amostra</th><th>Data</th><th></th></tr></thead><tbody>'+
+        rows.map(function(r){return '<tr class="'+(adminSel.mic.has(String(r.id))?"sel":"")+'">'+chk(r)+
+            '<td><div class="admin-thumb" data-path="'+escapeHtml(r.image_path)+'"></div></td><td>'+escapeHtml(r.device)+'</td><td>'+escapeHtml(r.concentration)+'</td><td>'+escapeHtml(r.proportion)+'</td><td>'+escapeHtml(r.syringe_config)+
+            '</td><td>'+escapeHtml(r.collection_time_seconds)+' s</td><td>'+escapeHtml(r.sample)+'</td><td>'+fmt(r.created_at)+'</td>'+del(r)+'</tr>';}).join("")+'</tbody></table>';
+        try{
+            const res=await sb.storage.from("microscopy").createSignedUrls(rows.map(r=>r.image_path),3600);
+            if(res.error){throw res.error;}
+            const map={};(res.data||[]).forEach(function(x){if(x.signedUrl){map[x.path]=x.signedUrl;}});
+            box.querySelectorAll(".admin-thumb").forEach(function(el){
+                const u=map[el.dataset.path];
+                el.innerHTML=u?'<img class="admin-thumb" loading="lazy" src="'+escapeHtml(u)+'" alt="">':'<span class="status">sem prévia</span>';
+            });
+        }catch(e){console.warn("Miniaturas:",e);}
     }
-
-    if(!microscopyRows.length){
-
-        container.innerHTML =
-            '<div class="status">Nenhuma imagem microscópica cadastrada.</div>';
-
-        return;
-    }
-
-    container.innerHTML =
-        microscopyRows.map(function(row){
-
-            const date =
-                row.created_at
-                ? new Date(row.created_at).toLocaleString("pt-BR")
-                : "";
-
-            return (
-                '<div class="data-record" id="micAdminRow_' +
-                    Number(row.id) +
-                '">' +
-                    '<div class="admin-mic-row">' +
-                        '<div id="micAdminPreview_' + Number(row.id) + '">' +
-                            '<div class="status">...</div>' +
-                        '</div>' +
-                        '<div style="flex:1;min-width:220px;">' +
-                            '<div class="data-record-title">' +
-                                escapeHtml(row.device) +
-                                ' • ' +
-                                escapeHtml(row.concentration) +
-                                ' • ' +
-                                escapeHtml(row.proportion) +
-                            '</div>' +
-                            '<div class="data-record-meta">' +
-                                '<b>Seringa:</b> ' + escapeHtml(row.syringe_config) +
-                                ' &nbsp; | &nbsp; <b>Tempo:</b> ' +
-                                Number(row.collection_time_seconds).toFixed(1) + ' s' +
-                                ' &nbsp; | &nbsp; <b>Amostra:</b> ' + escapeHtml(row.sample) +
-                                '<br><b>Cadastrado em:</b> ' + escapeHtml(date) +
-                            '</div>' +
-                        '</div>' +
-                        '<div class="admin-delete-area">' +
-                            '<button class="btn danger small" onclick="deleteMicroscopy(' +
-                                Number(row.id) +
-                            ')">🗑️ Apagar</button>' +
-                        '</div>' +
-                    '</div>' +
-                '</div>'
-            );
-
-        }).join("");
-
-    await Promise.all(
-        microscopyRows.map(async function(row){
-
-            const holder =
-                document.getElementById(
-                    "micAdminPreview_" + Number(row.id)
-                );
-
-            if(!holder){
-                return;
-            }
-
-            try{
-
-                const url =
-                    await createImageUrl(row.image_path);
-
-                holder.innerHTML =
-                    '<img class="admin-mic-thumb" src="' +
-                    escapeHtml(url) +
-                    '" alt="Prévia microscópica">';
-
-            }
-            catch(error){
-
-                holder.innerHTML =
-                    '<div class="alert warn">Não foi possível gerar a prévia desta imagem.</div>';
-
-            }
-
-        })
-    );
-
+    updateAdminSel(type);
 }
 
+function toggleAdminRow(type,el){
+    const id=String(el.dataset.id);
+    if(el.checked){adminSel[type].add(id);}else{adminSel[type].delete(id);}
+    el.closest("tr").classList.toggle("sel",el.checked);
+    updateAdminSel(type);
+}
 
-async function deleteMicroscopy(id){
+function toggleAdminAll(type,el){
+    const T=type==="half"?"Half":"Mic";
+    document.querySelectorAll("#admin"+T+"DataList input[type=checkbox]").forEach(function(c){
+        c.checked=el.checked;
+        if(el.checked){adminSel[type].add(String(c.dataset.id));}else{adminSel[type].delete(String(c.dataset.id));}
+        c.closest("tr").classList.toggle("sel",el.checked);
+    });
+    updateAdminSel(type);
+}
 
-    if(currentRole !== "admin"){
-        return;
-    }
+function updateAdminSel(type){
+    const T=type==="half"?"Half":"Mic";
+    const n=adminSel[type].size;
+    const b=document.getElementById("admin"+T+"DelSel");
+    b.disabled=!n;
+    b.textContent="🗑️ Apagar selecionados ("+n+")";
+}
 
-    const row =
-        microscopyRows.find(function(item){
-            return Number(item.id) === Number(id);
-        });
+function deleteSelected(type){
+    deleteAdminRows(type,[...adminSel[type]]);
+}
 
-    if(!row){
-        return;
-    }
-
-    const description =
-        row.device +
-        " • " +
-        row.concentration +
-        " • " +
-        row.proportion +
-        " • amostra " +
-        row.sample;
-
-    if(!window.confirm(
-        "Apagar esta imagem e o registro correspondente?\n\n" +
-        description +
-        "\n\nO arquivo também será removido do Supabase Storage. Essa ação não pode ser desfeita."
-    )){
-        return;
-    }
-
+async function deleteAdminRows(type,ids){
+    if(currentRole!=="admin"||!ids.length){return;}
+    const isHalf=type==="half";
+    const all=isHalf?halfRows:microscopyRows;
+    const rows=all.filter(function(r){return ids.map(String).includes(String(r.id));});
+    if(!rows.length){return;}
+    const sample=rows.slice(0,5).map(function(r){
+        return "• "+r.device+" • "+r.concentration+" • "+r.proportion+(isHalf?" • "+Number(r.half_life_seconds).toFixed(2)+" s":" • amostra "+r.sample);
+    }).join("\n");
+    if(!window.confirm("Apagar "+rows.length+(isHalf?" medida(s) de meia-vida?":" imagem(ns) e o(s) arquivo(s) do Storage?")+"\n\n"+sample+(rows.length>5?"\n... e mais "+(rows.length-5):"")+"\n\nEssa ação não pode ser desfeita.")){return;}
+    adminMsg("warn","Apagando...");
     try{
-
-        document.getElementById("adminDataMsg").innerHTML =
-            '<div class="alert warn">Apagando imagem e registro...</div>';
-
-        /*
-         * Primeiro removemos o registro do banco.
-         * Em seguida removemos o arquivo físico do Storage.
-         * Se o Storage falhar, o site informa o caminho para nova tentativa.
-         */
-
-        const dbResult =
-            await sb
-                .from("microscopy_images")
-                .delete()
-                .eq("id", Number(id));
-
-        if(dbResult.error){
-            throw dbResult.error;
-        }
-
-        const storageResult =
-            await sb
-                .storage
-                .from("microscopy")
-                .remove([row.image_path]);
-
-        if(storageResult.error){
-
-            await loadAllData();
-            renderAdminHalfData();
-            await renderAdminMicroscopyData();
-
-            document.getElementById("adminDataMsg").innerHTML =
-                '<div class="alert warn">' +
-                'O registro foi apagado, mas o arquivo do Storage não pôde ser removido. ' +
-                'Verifique a política de DELETE do bucket. Caminho: ' +
-                escapeHtml(row.image_path) +
-                '</div>';
-
+        const rawIds=rows.map(r=>r.id);
+        const res=await sb.from(isHalf?"half_life_tests":"microscopy_images").delete().in("id",rawIds).select("*");
+        if(res.error){throw res.error;}
+        const deleted=res.data||[];
+        /* Sem política de DELETE o Supabase não dá erro: apenas apaga 0 linhas. */
+        if(!deleted.length){
+            adminMsg("error","Nada foi apagado: o Supabase bloqueou a exclusão (falta a política de DELETE). Abra <b>“Não consegue apagar? Ver SQL”</b> acima, copie e execute no SQL Editor do Supabase.");
             return;
         }
-
+        let storageNote="";
+        if(!isHalf){
+            const paths=deleted.map(r=>r.image_path).filter(Boolean);
+            if(paths.length){
+                const st=await sb.storage.from("microscopy").remove(paths);
+                if(st.error||!(st.data&&st.data.length)){
+                    storageNote=" Atenção: o registro foi apagado, mas o arquivo no Storage não foi removido (falta a política de DELETE em storage.objects — veja o SQL acima).";
+                }
+            }
+        }
+        deleted.forEach(function(r){adminSel[type].delete(String(r.id));});
         await loadAllData();
-        renderAdminHalfData();
-        await renderAdminMicroscopyData();
-
-        document.getElementById("adminDataMsg").innerHTML =
-            '<div class="alert ok">Imagem, arquivo do Storage e registro apagados com sucesso.</div>';
-
+        await renderAdminData(type);
+        const partial=deleted.length<rows.length?" ("+(rows.length-deleted.length)+" não foram apagados.)":"";
+        adminMsg(storageNote||partial?"warn":"ok",deleted.length+" registro(s) apagado(s)."+partial+storageNote);
+    }catch(e){
+        console.error(e);
+        adminMsg("error","Não foi possível apagar: "+escapeHtml(e.message));
     }
-    catch(error){
-
-        console.error(error);
-
-        document.getElementById("adminDataMsg").innerHTML =
-            '<div class="alert error">Não foi possível apagar: ' +
-            escapeHtml(error.message) +
-            '</div>';
-
-    }
-
 }
+
+function deleteHalfLife(id){return deleteAdminRows("half",[id]);}
+function deleteMicroscopy(id){return deleteAdminRows("mic",[id]);}
 
 
 /* ============================================================
@@ -2841,58 +2547,13 @@ function uniqueValues(values){
 }
 
 
-function fillSelect(
-    id,
-    values,
-    keepValue = ""
-){
-
-    const select =
-        document.getElementById(id);
-
-
-    if(!select){
-
-        return;
-
-    }
-
-
-    const unique =
-        uniqueValues(values);
-
-
-    let html =
-        '<option value="">Selecione...</option>';
-
-
-    unique.forEach(
-        function(value){
-
-            html +=
-                '<option value="' +
-                escapeHtml(value) +
-                '">' +
-                escapeHtml(value) +
-                '</option>';
-
-        }
-    );
-
-
-    select.innerHTML = html;
-
-
-    if(
-        keepValue &&
-        unique.includes(String(keepValue))
-    ){
-
-        select.value =
-            String(keepValue);
-
-    }
-
+function fillSelect(id,values,keepValue="",placeholder="Selecione..."){
+    const select=document.getElementById(id);
+    if(!select){return;}
+    const unique=uniqueValues(values);
+    select.innerHTML='<option value="">'+escapeHtml(placeholder)+'</option>'+
+        unique.map(function(v){return '<option value="'+escapeHtml(v)+'">'+escapeHtml(v)+'</option>';}).join("");
+    if(keepValue&&unique.includes(String(keepValue))){select.value=String(keepValue);}
 }
 
 
@@ -3413,385 +3074,231 @@ async function createImageUrl(path){
 }
 
 /* ============================================================
-   TRATAMENTO VISUAL MÍNIMO DA MICROSCOPIA
+   TRATAMENTO VISUAL DA MICROSCOPIA (somente na cópia exibida)
    ============================================================ */
 
-/*
- * O tratamento é aplicado somente à cópia exibida no comparativo.
- * O arquivo original salvo no Supabase Storage não é alterado.
- *
- * Processo:
- * 1. limita a resolução exibida para evitar consumo excessivo de memória;
- * 2. reduz discretamente altas luzes/brilho;
- * 3. aumenta o contraste local de forma moderada;
- * 4. aplica nitidez por convolução 3x3;
- * 5. mantém a imagem original no Storage.
- */
+const MIC_PRESETS={
+    soft:  {glare:30,bright:-3, contrast:110,sharp:90, clarity:25,sat:95},
+    strong:{glare:68,bright:-9, contrast:142,sharp:210,clarity:72,sat:90},
+    max:   {glare:88,bright:-16,contrast:165,sharp:320,clarity:115,sat:84}
+};
+const MIC_SLIDERS={glare:"micGlare",bright:"micBright",contrast:"micContrast",sharp:"micSharp",clarity:"micClarity",sat:"micSat"};
+let micSrc={A:null,B:null};
+let micTimer=null;
+let micShowOriginal=false;
 
-async function enhanceMicroscopyImage(url){
-
-    return new Promise(function(resolve){
-
-        const image = new Image();
-
-        image.crossOrigin = "anonymous";
-
-        image.onload = function(){
-
-            try{
-
-                const maxDimension = 2200;
-
-                const scale =
-                    Math.min(
-                        1,
-                        maxDimension /
-                        Math.max(
-                            image.naturalWidth,
-                            image.naturalHeight
-                        )
-                    );
-
-                const width =
-                    Math.max(
-                        1,
-                        Math.round(
-                            image.naturalWidth * scale
-                        )
-                    );
-
-                const height =
-                    Math.max(
-                        1,
-                        Math.round(
-                            image.naturalHeight * scale
-                        )
-                    );
-
-                const canvas =
-                    document.createElement("canvas");
-
-                canvas.width = width;
-                canvas.height = height;
-
-                const ctx =
-                    canvas.getContext(
-                        "2d",
-                        {
-                            willReadFrequently:true
-                        }
-                    );
-
-                ctx.drawImage(
-                    image,
-                    0,
-                    0,
-                    width,
-                    height
-                );
-
-                const source =
-                    ctx.getImageData(
-                        0,
-                        0,
-                        width,
-                        height
-                    );
-
-                const input =
-                    source.data;
-
-                const output =
-                    new Uint8ClampedArray(
-                        input
-                    );
-
-                /*
-                 * Nitidez moderada:
-                 *   0   -0.55   0
-                 * -0.55  3.20 -0.55
-                 *   0   -0.55   0
-                 *
-                 * A soma é 1.10, resultando em reforço discreto
-                 * das bordas sem tentar "inventar" detalhes.
-                 */
-
-                const kernel = [
-                    0, -0.55, 0,
-                    -0.55, 3.20, -0.55,
-                    0, -0.55, 0
-                ];
-
-                const kSize = 3;
-                const kHalf = 1;
-
-                for(
-                    let y = 1;
-                    y < height - 1;
-                    y++
-                ){
-
-                    for(
-                        let x = 1;
-                        x < width - 1;
-                        x++
-                    ){
-
-                        const center =
-                            (y * width + x) * 4;
-
-                        let r = 0;
-                        let g = 0;
-                        let b = 0;
-
-                        let ki = 0;
-
-                        for(
-                            let ky = -kHalf;
-                            ky <= kHalf;
-                            ky++
-                        ){
-
-                            for(
-                                let kx = -kHalf;
-                                kx <= kHalf;
-                                kx++
-                            ){
-
-                                const pixel =
-                                    (
-                                        (y + ky) *
-                                        width +
-                                        (x + kx)
-                                    ) * 4;
-
-                                const weight =
-                                    kernel[ki++];
-
-                                r +=
-                                    input[pixel] *
-                                    weight;
-
-                                g +=
-                                    input[pixel + 1] *
-                                    weight;
-
-                                b +=
-                                    input[pixel + 2] *
-                                    weight;
-
-                            }
-
-                        }
-
-                        output[center] =
-                            Math.max(
-                                0,
-                                Math.min(
-                                    255,
-                                    r
-                                )
-                            );
-
-                        output[center + 1] =
-                            Math.max(
-                                0,
-                                Math.min(
-                                    255,
-                                    g
-                                )
-                            );
-
-                        output[center + 2] =
-                            Math.max(
-                                0,
-                                Math.min(
-                                    255,
-                                    b
-                                )
-                            );
-
-                    }
-
-                }
-
-                source.data.set(output);
-
-                ctx.putImageData(
-                    source,
-                    0,
-                    0
-                );
-
-                resolve(
-                    canvas.toDataURL(
-                        "image/jpeg",
-                        0.94
-                    )
-                );
-
+function boxBlur(src,w,h,r){
+    const tmp=new Uint8ClampedArray(src.length),out=new Uint8ClampedArray(src.length),d=2*r+1,W=w*4;
+    for(let y=0;y<h;y++){
+        const row=y*W;
+        for(let c=0;c<3;c++){
+            let s=0;
+            for(let k=-r;k<=r;k++){s+=src[row+Math.min(w-1,Math.max(0,k))*4+c];}
+            for(let x=0;x<w;x++){
+                tmp[row+x*4+c]=s/d;
+                s+=src[row+Math.min(w-1,x+r+1)*4+c]-src[row+Math.max(0,x-r)*4+c];
             }
-            catch(error){
-
-                console.warn(
-                    "Não foi possível aplicar o tratamento visual. A imagem original será usada.",
-                    error
-                );
-
-                resolve(url);
-
+        }
+    }
+    for(let x=0;x<w;x++){
+        for(let c=0;c<3;c++){
+            let s=0;
+            for(let k=-r;k<=r;k++){s+=tmp[Math.min(h-1,Math.max(0,k))*W+x*4+c];}
+            for(let y=0;y<h;y++){
+                out[y*W+x*4+c]=s/d;
+                s+=tmp[Math.min(h-1,y+r+1)*W+x*4+c]-tmp[Math.max(0,y-r)*W+x*4+c];
             }
-
-        };
-
-        image.onerror = function(){
-
-            resolve(url);
-
-        };
-
-        image.src = url;
-
-    });
-
+        }
+    }
+    return out;
 }
 
+function processMic(src,w,h,p){
+    const g=p.glare/100,br=p.bright*2.55,ct=p.contrast/100,st=p.sat/100;
+    const t=new Uint8ClampedArray(src.length);
+    const tone=function(v){
+        v/=255;
+        if(v>0.55){v=0.55+(v-0.55)*(1-0.7*g);}   /* comprime altas luzes (glare) */
+        return (v*255+br-128)*ct+128;             /* brilho + contraste */
+    };
+    for(let i=0;i<src.length;i+=4){
+        const r=tone(src[i]),gg=tone(src[i+1]),b=tone(src[i+2]);
+        const l=0.299*r+0.587*gg+0.114*b;
+        t[i]=l+(r-l)*st;t[i+1]=l+(gg-l)*st;t[i+2]=l+(b-l)*st;t[i+3]=255;
+    }
+    const sa=p.sharp/100,ca=p.clarity/100;
+    if(sa<=0&&ca<=0){return t;}
+    const out=new Uint8ClampedArray(t);
+    const small=sa>0?boxBlur(t,w,h,1):null;
+    const big=ca>0?boxBlur(t,w,h,Math.max(6,Math.round(Math.max(w,h)/50))):null;
+    for(let i=0;i<t.length;i+=4){
+        for(let c=0;c<3;c++){
+            let v=t[i+c];
+            if(small){v+=sa*1.2*(t[i+c]-small[i+c]);}   /* máscara de nitidez */
+            if(big){v+=ca*0.9*(t[i+c]-big[i+c]);}       /* contraste local / detalhes */
+            out[i+c]=v;
+        }
+    }
+    return out;
+}
+
+function micParams(){
+    const p={};
+    Object.keys(MIC_SLIDERS).forEach(function(k){p[k]=Number(document.getElementById(MIC_SLIDERS[k]).value);});
+    return p;
+}
+
+function setMicSliders(p){
+    Object.keys(MIC_SLIDERS).forEach(function(k){document.getElementById(MIC_SLIDERS[k]).value=p[k];});
+    Object.keys(MIC_SLIDERS).forEach(function(k){document.getElementById(MIC_SLIDERS[k]+"Val").textContent=p[k];});
+}
+
+function applyMicPreset(name){
+    micShowOriginal=false;
+    document.getElementById("micOrigBtn").textContent="👁 Ver original";
+    setMicSliders(MIC_PRESETS[name]);
+    paintMic("A");paintMic("B");
+}
+
+function micSliderChanged(){
+    const p=micParams();
+    Object.keys(MIC_SLIDERS).forEach(function(k){document.getElementById(MIC_SLIDERS[k]+"Val").textContent=p[k];});
+    clearTimeout(micTimer);
+    micTimer=setTimeout(function(){paintMic("A");paintMic("B");},120);
+}
+
+function toggleMicOriginal(){
+    micShowOriginal=!micShowOriginal;
+    document.getElementById("micOrigBtn").textContent=micShowOriginal?"✨ Ver tratada":"👁 Ver original";
+    paintMic("A");paintMic("B");
+}
+
+function paintMic(side){
+    const s=micSrc[side];
+    if(!s){return;}
+    const cv=document.getElementById("micCanvas"+side);
+    cv.width=s.w;cv.height=s.h;
+    const px=micShowOriginal?s.data:processMic(s.data,s.w,s.h,micParams());
+    cv.getContext("2d").putImageData(new ImageData(px,s.w,s.h),0,0);
+}
+
+async function loadMicSource(url){
+    const resp=await fetch(url,{cache:"no-store"});
+    if(!resp.ok){
+        throw new Error("Não foi possível carregar a imagem (HTTP "+resp.status+").");
+    }
+
+    const blob=await resp.blob();
+
+    let bmp;
+    if(window.createImageBitmap){
+        bmp=await createImageBitmap(blob);
+    }else{
+        bmp=await new Promise(function(resolve,reject){
+            const img=new Image();
+            img.onload=function(){resolve(img);};
+            img.onerror=function(){reject(new Error("O navegador não conseguiu decodificar a imagem."));};
+            img.src=URL.createObjectURL(blob);
+        });
+    }
+
+    const k=Math.min(1,1600/Math.max(bmp.width,bmp.height));
+    const w=Math.max(1,Math.round(bmp.width*k));
+    const h=Math.max(1,Math.round(bmp.height*k));
+
+    const cv=document.createElement("canvas");
+    cv.width=w;
+    cv.height=h;
+
+    const ctx=cv.getContext("2d",{willReadFrequently:true});
+    if(!ctx){
+        throw new Error("O navegador não disponibilizou o canvas para tratamento.");
+    }
+
+    ctx.drawImage(bmp,0,0,w,h);
+
+    let data;
+    try{
+        data=ctx.getImageData(0,0,w,h).data;
+    }catch(error){
+        throw new Error("O navegador bloqueou a leitura dos pixels da imagem.");
+    }
+
+    if(!data || !data.length){
+        throw new Error("A imagem não contém dados de pixels legíveis.");
+    }
+
+    if(typeof bmp.close==="function"){
+        bmp.close();
+    }
+
+    return {w:w,h:h,data:data};
+}
+
+function downloadMicCanvas(side){
+    const cv=document.getElementById("micCanvas"+side);
+    if(!micSrc[side]){alert("Esta imagem está no modo de reserva (sem canvas).");return;}
+    cv.toBlob(function(blob){
+        if(!blob){
+            alert("Não foi possível gerar o PNG.");
+            return;
+        }
+        const url=URL.createObjectURL(blob);
+        const a=document.createElement("a");
+        a.href=url;
+        a.download="microscopia-"+side+"-tratada.png";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(function(){URL.revokeObjectURL(url);},1000);
+    },"image/png");
+}
 
 /* ============================================================
    COMPARAR
    ============================================================ */
 
 async function compareImages(){
-
-    const concentration =
-        document
-            .getElementById(
-                "cmpConcentration"
-            )
-            .value;
-
-
-    const imageA =
-        getSelectedImage("A");
-
-
-    const imageB =
-        getSelectedImage("B");
-
-
-    if(
-        !concentration ||
-        !imageA ||
-        !imageB
-    ){
-
-        document
-            .getElementById(
-                "comparisonMsg"
-            )
-            .innerHTML =
-                '<div class="alert warn">' +
-                'Selecione todos os campos de A e B.' +
-                '</div>';
-
+    const concentration=document.getElementById("cmpConcentration").value;
+    const imageA=getSelectedImage("A"),imageB=getSelectedImage("B");
+    const msg=document.getElementById("comparisonMsg");
+    if(!concentration||!imageA||!imageB){
+        msg.innerHTML='<div class="alert warn">Selecione todos os campos de A e B.</div>';
         return;
-
     }
-
-
     try{
-
-        const urls =
-            await Promise.all([
-
-                createImageUrl(
-                    imageA.image_path
-                ),
-
-                createImageUrl(
-                    imageB.image_path
-                )
-
-            ]);
-
-
-        const enhancedUrls =
-            await Promise.all([
-                enhanceMicroscopyImage(urls[0]),
-                enhanceMicroscopyImage(urls[1])
-            ]);
-
-
-        document
-            .getElementById("imgA")
-            .src =
-                enhancedUrls[0];
-
-        document
-            .getElementById("imgA")
-            .style.filter =
-                "contrast(1.12) brightness(0.90) saturate(0.92)";
-
-
-        document
-            .getElementById("imgB")
-            .src =
-                enhancedUrls[1];
-
-        document
-            .getElementById("imgB")
-            .style.filter =
-                "contrast(1.12) brightness(0.90) saturate(0.92)";
-
-
-        document
-            .getElementById("metaA")
-            .innerHTML =
-                buildImageMetadata(
-                    imageA
-                );
-
-
-        document
-            .getElementById("metaB")
-            .innerHTML =
-                buildImageMetadata(
-                    imageB
-                );
-
-
-        document
-            .getElementById(
-                "comparisonResult"
-            )
-            .classList
-            .remove("hidden");
-
-
-        document
-            .getElementById(
-                "comparisonMsg"
-            )
-            .innerHTML = "";
-
-
-    }
-    catch(error){
-
+        msg.innerHTML='<div class="alert warn">Carregando e tratando imagens...</div>';
+        const urls=await Promise.all([createImageUrl(imageA.image_path),createImageUrl(imageB.image_path)]);
+        document.getElementById("metaA").innerHTML=buildImageMetadata(imageA);
+        document.getElementById("metaB").innerHTML=buildImageMetadata(imageB);
+        micShowOriginal=false;
+        document.getElementById("micOrigBtn").textContent="👁 Ver original";
+        setMicSliders(MIC_PRESETS.strong);
+        let ok=true;
+        for(const [i,side] of ["A","B"].entries()){
+            const cv=document.getElementById("micCanvas"+side);
+            const fb=document.getElementById("micFallback"+side);
+            try{
+                micSrc[side]=await loadMicSource(urls[i]);
+                cv.classList.remove("hidden");fb.classList.add("hidden");
+                paintMic(side);
+            }catch(err){
+                console.warn("Canvas indisponível, usando filtro CSS:",err);
+                ok=false;micSrc[side]=null;
+                cv.classList.add("hidden");fb.classList.remove("hidden");
+                fb.src=urls[i];
+                fb.style.filter="contrast(1.3) brightness(0.85) saturate(0.9)";
+            }
+        }
+        document.getElementById("micTreatStatus").textContent=ok
+            ?"Tratamento ativo nas duas imagens. Ajuste os controles ou use “Ver original” para comparar."
+            :"O navegador bloqueou a leitura dos pixels; exibindo filtro visual simples (os controles não se aplicam).";
+        document.getElementById("comparisonResult").classList.remove("hidden");
+        msg.innerHTML="";
+    }catch(error){
         console.error(error);
-
-        document
-            .getElementById(
-                "comparisonMsg"
-            )
-            .innerHTML =
-                '<div class="alert error">' +
-                'Erro ao abrir as imagens: ' +
-                escapeHtml(error.message) +
-                '</div>';
-
+        msg.innerHTML='<div class="alert error">Erro ao abrir as imagens: '+escapeHtml(error.message)+'</div>';
     }
-
 }
 
 
@@ -4830,6 +4337,11 @@ function renderScientificHalfChart(){
             status.textContent = "Selecione a proporção e a concentração para gerar o gráfico.";
         }
 
+        const exportButton = document.getElementById("exportScientificChartPng");
+        if(exportButton){
+            exportButton.disabled = true;
+        }
+
         return;
 
     }
@@ -4843,6 +4355,11 @@ function renderScientificHalfChart(){
             status.textContent = "Não há dados cadastrados para essa proporção e concentração.";
         }
 
+        const exportButton = document.getElementById("exportScientificChartPng");
+        if(exportButton){
+            exportButton.disabled = true;
+        }
+
         return;
 
     }
@@ -4854,118 +4371,69 @@ function renderScientificHalfChart(){
             " • " + groups.length + " condição(ões) encontrada(s).";
     }
 
-    const labels = groups.map(function(group){
-
-        let label = group.device + " | " + group.source;
-
-        if(group.syringe){
-            label += " | " + group.syringe;
-        }
-
-        return label;
-
+    const labels = groups.map(function(g){
+        return [g.device,g.source].concat(g.syringe?[g.syringe]:[]);
     });
+    const colors = groups.map(function(g,i){return getScientificSourceColor(g.source,i);});
+    const wrap = document.getElementById("halfChartWrap");
+    if(wrap){wrap.style.minWidth=Math.max(groups.length*120,320)+"px";}
 
-    const colors = groups.map(function(group, index){
-        return getScientificSourceColor(group.source, index);
-    });
-
-    halfScientificChart = new Chart(canvas, {
-
-        type: "bar",
-
-        data: {
-
-            labels,
-
-            datasets: [{
-
-                label: "Meia-vida média (s)",
-
-                data: groups.map(g => g.mean),
-
-                backgroundColor: colors,
-
-                borderColor: colors,
-
-                borderWidth: 1,
-
-                borderRadius: 0,
-
-                maxBarThickness: 42
-
-            }]
-
-        },
-
-        options: {
-
-            responsive: true,
-
-            maintainAspectRatio: false,
-
-            plugins: {
-
-                legend: {
-                    display: false
-                },
-
-                tooltip: {
-                    callbacks: {
-
-                        title: function(items){
-                            return items[0]?.label || "";
-                        },
-
-                        label: function(context){
-
-                            const group = groups[context.dataIndex];
-
-                            return " " + group.mean.toFixed(2) + " s (N=" + group.n + ")";
-
-                        }
-
-                    }
-                }
-
+    halfScientificChart = new Chart(canvas,{
+        type:"bar",
+        plugins:[halfLifeValuePlugin],
+        data:{labels,datasets:[{
+            label:"Meia-vida média (s)",
+            data:groups.map(g=>g.mean),
+            ns:groups.map(g=>g.n),
+            backgroundColor:colors,borderColor:colors,borderWidth:1,maxBarThickness:64
+        }]},
+        options:{
+            responsive:true,maintainAspectRatio:false,devicePixelRatio:2,
+            layout:{padding:{top:30}},
+            plugins:{
+                legend:{display:false},
+                title:{display:true,text:"Meia-vida • Proporção "+proportion+" • Polidocanol "+concentration,color:"#073f5d",font:{size:16,weight:"bold"}},
+                tooltip:{callbacks:{label:function(c){const g=groups[c.dataIndex];return " "+g.mean.toFixed(2)+" s (N="+g.n+")";}}}
             },
-
-            scales: {
-
-                x: {
-
-                    ticks: {
-                        autoSkip: false,
-                        maxRotation: 55,
-                        minRotation: 45
-                    },
-
-                    grid: {
-                        color: "rgba(120,140,150,0.18)"
-                    }
-
-                },
-
-                y: {
-
-                    beginAtZero: true,
-
-                    title: {
-                        display: true,
-                        text: "Segundos"
-                    },
-
-                    grid: {
-                        color: "rgba(120,140,150,0.18)"
-                    }
-
-                }
-
+            scales:{
+                x:{ticks:{autoSkip:false,maxRotation:0,minRotation:0,font:{size:12}},grid:{display:false}},
+                y:{beginAtZero:true,grace:"12%",title:{display:true,text:"Meia-vida (s)"},grid:{color:"rgba(120,140,150,0.18)"}}
             }
-
         }
-
     });
+
+    const exportButton = document.getElementById("exportScientificChartPng");
+
+    if(exportButton){
+        exportButton.disabled = false;
+    }
+
+}
+
+
+function exportScientificHalfChartPNG(){
+
+    if(!halfScientificChart){
+        alert("Gere o gráfico antes de exportar.");
+        return;
+    }
+
+    const proportion = document.getElementById("halfGraphProportion")?.value || "condicao";
+    const concentration = document.getElementById("halfGraphConcentration")?.value || "concentracao";
+
+    const safe = function(value){
+        return String(value)
+            .replace(/[^a-zA-Z0-9À-ÿ]+/g, "-")
+            .replace(/^-+|-+$/g, "")
+            .toLowerCase();
+    };
+
+    const link = document.createElement("a");
+    link.href = halfScientificChart.toBase64Image("image/png", 1);
+    link.download = "grafico-meia-vida-" + safe(concentration) + "-" + safe(proportion) + ".png";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
 
 }
 
