@@ -335,8 +335,8 @@ th{
 }
 
 .data-record img{
-    width:170px;
-    height:120px;
+    width:88px;
+    height:64px;
     object-fit:contain;
     background:#f1f4f6;
     border:1px solid #d8e2e7;
@@ -354,6 +354,28 @@ th{
     color:#607783;
     font-size:12px;
     text-align:center;
+}
+
+.admin-mic-row{
+    display:flex;
+    align-items:center;
+    gap:14px;
+}
+
+.admin-mic-thumb{
+    width:88px;
+    height:64px;
+    flex:0 0 88px;
+    object-fit:cover;
+    border:1px solid #cbd9df;
+    border-radius:8px;
+    background:#eef2f4;
+}
+
+.admin-delete-area{
+    display:flex;
+    align-items:center;
+    gap:10px;
 }
 
 @media(max-width:800px){
@@ -784,6 +806,10 @@ th{
     <h2>
         Comparação
     </h2>
+
+    <p class="status">
+        Tratamento visual aplicado somente à visualização: redução de brilho, aumento moderado de contraste e nitidez. A imagem original armazenada no Supabase não é alterada.
+    </p>
 
     <div class="compare-grid">
 
@@ -1485,6 +1511,7 @@ th{
         Operador, Seringa, Proporção e Laboratório.
     </p>
 
+</div>
 
 <!-- =========================== -->
 <!-- VERIFICAR / APAGAR DADOS -->
@@ -1573,9 +1600,6 @@ th{
         class="data-management-grid"
     ></div>
 
-</div>
-
-</div>
 </div>
 
 </div>
@@ -2592,11 +2616,11 @@ async function renderAdminMicroscopyData(){
                 '<div class="data-record" id="micAdminRow_' +
                     Number(row.id) +
                 '">' +
-
-                    '<div class="data-record-header">' +
-
-                        '<div>' +
-
+                    '<div class="admin-mic-row">' +
+                        '<div id="micAdminPreview_' + Number(row.id) + '">' +
+                            '<div class="status">...</div>' +
+                        '</div>' +
+                        '<div style="flex:1;min-width:220px;">' +
                             '<div class="data-record-title">' +
                                 escapeHtml(row.device) +
                                 ' • ' +
@@ -2604,46 +2628,20 @@ async function renderAdminMicroscopyData(){
                                 ' • ' +
                                 escapeHtml(row.proportion) +
                             '</div>' +
-
                             '<div class="data-record-meta">' +
-
-                                '<b>Seringa:</b> ' +
-                                escapeHtml(row.syringe_config) +
-                                ' &nbsp; | &nbsp; ' +
-
-                                '<b>Tempo:</b> ' +
-                                Number(row.collection_time_seconds).toFixed(1) +
-                                ' s' +
-                                '<br>' +
-
-                                '<b>Amostra:</b> ' +
-                                escapeHtml(row.sample) +
-                                ' &nbsp; | &nbsp; ' +
-
-                                '<b>Cadastrado em:</b> ' +
-                                escapeHtml(date) +
-
+                                '<b>Seringa:</b> ' + escapeHtml(row.syringe_config) +
+                                ' &nbsp; | &nbsp; <b>Tempo:</b> ' +
+                                Number(row.collection_time_seconds).toFixed(1) + ' s' +
+                                ' &nbsp; | &nbsp; <b>Amostra:</b> ' + escapeHtml(row.sample) +
+                                '<br><b>Cadastrado em:</b> ' + escapeHtml(date) +
                             '</div>' +
-
-                            '<div id="micAdminPreview_' +
-                                Number(row.id) +
-                            '">' +
-                                '<div class="status">Carregando prévia...</div>' +
-                            '</div>' +
-
                         '</div>' +
-
-                        '<button ' +
-                            'class="btn danger small" ' +
-                            'onclick="deleteMicroscopy(' +
+                        '<div class="admin-delete-area">' +
+                            '<button class="btn danger small" onclick="deleteMicroscopy(' +
                                 Number(row.id) +
-                            ')"' +
-                        '>' +
-                            '🗑️ Apagar imagem e registro' +
-                        '</button>' +
-
+                            ')">🗑️ Apagar</button>' +
+                        '</div>' +
                     '</div>' +
-
                 '</div>'
             );
 
@@ -2667,10 +2665,9 @@ async function renderAdminMicroscopyData(){
                     await createImageUrl(row.image_path);
 
                 holder.innerHTML =
-                    '<img src="' +
+                    '<img class="admin-mic-thumb" src="' +
                     escapeHtml(url) +
-                    '" alt="Prévia microscópica">' +
-                    '<div class="sharpen-note">Prévia original • o tratamento de nitidez é aplicado apenas na comparação.</div>';
+                    '" alt="Prévia microscópica">';
 
             }
             catch(error){
@@ -3425,8 +3422,10 @@ async function createImageUrl(path){
  *
  * Processo:
  * 1. limita a resolução exibida para evitar consumo excessivo de memória;
- * 2. aplica uma nitidez moderada por convolução 3x3;
- * 3. mantém a imagem original no Storage.
+ * 2. reduz discretamente altas luzes/brilho;
+ * 3. aumenta o contraste local de forma moderada;
+ * 4. aplica nitidez por convolução 3x3;
+ * 5. mantém a imagem original no Storage.
  */
 
 async function enhanceMicroscopyImage(url){
@@ -3731,7 +3730,7 @@ async function compareImages(){
         document
             .getElementById("imgA")
             .style.filter =
-                "contrast(1.04) brightness(1.02)";
+                "contrast(1.12) brightness(0.90) saturate(0.92)";
 
 
         document
@@ -3742,7 +3741,7 @@ async function compareImages(){
         document
             .getElementById("imgB")
             .style.filter =
-                "contrast(1.04) brightness(1.02)";
+                "contrast(1.12) brightness(0.90) saturate(0.92)";
 
 
         document
