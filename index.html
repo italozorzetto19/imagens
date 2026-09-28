@@ -274,8 +274,29 @@ th{
 }
 
 .chart-wrap{
-    height:390px;
+    height:430px;
     position:relative;
+}
+
+.scientific-chart-controls{
+    background:#f7fbfd;
+    border:1px solid #d7e5eb;
+    border-radius:14px;
+    padding:18px;
+    margin-bottom:20px;
+}
+
+.scientific-chart-title{
+    font-size:18px;
+    font-weight:700;
+    color:#073f5d;
+    margin-bottom:14px;
+}
+
+.chart-selection-status{
+    margin-top:12px;
+    color:#607783;
+    font-size:13px;
 }
 
 .section-title{
@@ -754,7 +775,53 @@ th{
     <div class="section-title">
 
         <h2>
-            Meia-vida da espuma
+            Evolução da meia-vida
+        </h2>
+
+    </div>
+
+    <div class="scientific-chart-controls">
+
+        <div class="scientific-chart-title">
+            Selecione a condição do gráfico
+        </div>
+
+        <div class="grid">
+
+            <div>
+                <label for="halfGraphProportion">Proporção</label>
+                <select id="halfGraphProportion" onchange="renderScientificHalfChart()">
+                    <option value="">Selecione a proporção...</option>
+                </select>
+            </div>
+
+            <div>
+                <label for="halfGraphConcentration">Concentração de polidocanol</label>
+                <select id="halfGraphConcentration" onchange="renderScientificHalfChart()">
+                    <option value="">Selecione a concentração...</option>
+                </select>
+            </div>
+
+        </div>
+
+        <div id="scientificChartStatus" class="chart-selection-status">
+            Selecione a proporção e a concentração para gerar o gráfico.
+        </div>
+
+    </div>
+
+    <div class="chart-wrap">
+        <canvas id="halfScientificChart"></canvas>
+    </div>
+
+</div>
+
+<div class="card">
+
+    <div class="section-title">
+
+        <h2>
+            Filtros detalhados e dados
         </h2>
 
     </div>
@@ -953,21 +1020,6 @@ th{
             <tbody id="halfSummaryBody"></tbody>
 
         </table>
-
-    </div>
-
-</div>
-
-
-<div class="card">
-
-    <h2>
-        Evolução da meia-vida
-    </h2>
-
-    <div class="chart-wrap">
-
-        <canvas id="halfChart"></canvas>
 
     </div>
 
@@ -1407,6 +1459,8 @@ let microscopyRows = [];
 let halfRows = [];
 
 let halfChart = null;
+
+let halfScientificChart = null;
 
 
 /* ============================================================
@@ -3165,6 +3219,8 @@ function loadHalfFilters(){
         }
     );
 
+    loadScientificChartSelectors();
+
 }
 
 
@@ -3637,7 +3693,7 @@ function renderHalfLife(){
         '</tr>';
 
 
-    drawHalfChart(groups);
+    renderScientificHalfChart();
 
 }
 
@@ -3646,102 +3702,338 @@ function renderHalfLife(){
    GRÁFICO
    ============================================================ */
 
-function drawHalfChart(groups){
+function loadScientificChartSelectors(){
 
-    const canvas =
-        document
-            .getElementById(
-                "halfChart"
-            );
+    const proportionSelect =
+        document.getElementById("halfGraphProportion");
 
+    const concentrationSelect =
+        document.getElementById("halfGraphConcentration");
+
+    if(!proportionSelect || !concentrationSelect){
+        return;
+    }
+
+    const oldProportion = proportionSelect.value;
+    const oldConcentration = concentrationSelect.value;
+
+    fillSelect(
+        "halfGraphProportion",
+        halfRows.map(r => r.proportion),
+        oldProportion,
+        "Selecione a proporção..."
+    );
+
+    fillSelect(
+        "halfGraphConcentration",
+        halfRows.map(r => r.concentration),
+        oldConcentration,
+        "Selecione a concentração..."
+    );
+
+    renderScientificHalfChart();
+
+}
+
+
+function scientificHalfRows(){
+
+    const proportion =
+        document.getElementById("halfGraphProportion")?.value || "";
+
+    const concentration =
+        document.getElementById("halfGraphConcentration")?.value || "";
+
+    if(!proportion || !concentration){
+        return [];
+    }
+
+    return halfRows.filter(function(row){
+
+        return (
+            String(row.proportion || "") === proportion &&
+            String(row.concentration || "") === concentration
+        );
+
+    });
+
+}
+
+
+function getScientificSourceColor(source, index){
+
+    const s = String(source || "").trim().toLowerCase();
+
+    if(s.includes("msb")){
+        return "#2e9b57";
+    }
+
+    if(s.includes("belczak")){
+        return "#c93c3c";
+    }
+
+    if(s.includes("literatura")){
+        return "#e5b92f";
+    }
+
+    const fallback = [
+        "#3f83c5",
+        "#8b5fbf",
+        "#e07b39",
+        "#3b9aa0"
+    ];
+
+    return fallback[index % fallback.length];
+
+}
+
+
+function groupScientificHalfRows(rows){
+
+    const groups = new Map();
+
+    rows.forEach(function(row){
+
+        const source = String(row.laboratory || "").trim() || "Sem fonte";
+        const syringe = String(row.syringe_config || "").trim();
+        const device = String(row.device || "").trim();
+
+        const key = [source, device, syringe].join("||");
+
+        if(!groups.has(key)){
+
+            groups.set(key, {
+                source,
+                device,
+                syringe,
+                values: []
+            });
+
+        }
+
+        const value = Number(row.half_life_seconds);
+
+        if(Number.isFinite(value)){
+            groups.get(key).values.push(value);
+        }
+
+    });
+
+    const deviceOrder = {
+        "BFoam": 1,
+        "Tessari": 2,
+        "Varíxio": 3,
+        "Steriven": 4
+    };
+
+    const sourceOrder = {
+        "msb": 1,
+        "literatura": 2,
+        "dr. belczak": 3,
+        "belczak": 3
+    };
+
+    return [...groups.values()]
+        .filter(g => g.values.length)
+        .map(function(group){
+
+            const sum = group.values.reduce((a,b) => a + b, 0);
+
+            return {
+                ...group,
+                n: group.values.length,
+                mean: sum / group.values.length
+            };
+
+        })
+        .sort(function(a,b){
+
+            const sa = String(a.source).toLowerCase();
+            const sb = String(b.source).toLowerCase();
+            const oa = sourceOrder[sa] || 99;
+            const ob = sourceOrder[sb] || 99;
+
+            if(oa !== ob) return oa - ob;
+
+            const da = deviceOrder[a.device] || 99;
+            const db = deviceOrder[b.device] || 99;
+
+            if(da !== db) return da - db;
+
+            return a.syringe.localeCompare(b.syringe, "pt-BR", {numeric:true});
+
+        });
+
+}
+
+
+function renderScientificHalfChart(){
+
+    const canvas = document.getElementById("halfScientificChart");
+    const status = document.getElementById("scientificChartStatus");
 
     if(!canvas){
+        return;
+    }
+
+    if(halfScientificChart){
+        halfScientificChart.destroy();
+        halfScientificChart = null;
+    }
+
+    const proportion = document.getElementById("halfGraphProportion")?.value || "";
+    const concentration = document.getElementById("halfGraphConcentration")?.value || "";
+
+    if(!proportion || !concentration){
+
+        if(status){
+            status.textContent = "Selecione a proporção e a concentração para gerar o gráfico.";
+        }
 
         return;
 
     }
 
+    const rows = scientificHalfRows();
+    const groups = groupScientificHalfRows(rows);
 
-    if(halfChart){
+    if(!groups.length){
 
-        halfChart.destroy();
+        if(status){
+            status.textContent = "Não há dados cadastrados para essa proporção e concentração.";
+        }
+
+        return;
 
     }
 
+    if(status){
+        status.textContent =
+            "Proporção " + proportion +
+            " • Concentração " + concentration +
+            " • " + groups.length + " condição(ões) encontrada(s).";
+    }
 
-    halfChart =
-        new Chart(
-            canvas,
-            {
+    const labels = groups.map(function(group){
 
-                type:"bar",
+        let label = group.device + " | " + group.source;
 
-                data:{
+        if(group.syringe){
+            label += " | " + group.syringe;
+        }
 
-                    labels:
-                        groups.map(
-                            function(group){
+        return label;
 
-                                return (
-                                    group.device +
-                                    " | " +
-                                    group.concentration +
-                                    " | " +
-                                    group.proportion
-                                );
+    });
 
-                            }
-                        ),
+    const colors = groups.map(function(group, index){
+        return getScientificSourceColor(group.source, index);
+    });
 
-                    datasets:[
+    halfScientificChart = new Chart(canvas, {
 
-                        {
+        type: "bar",
 
-                            label:
-                                "Meia-vida média (s)",
+        data: {
 
-                            data:
-                                groups.map(
-                                    g =>
-                                        g.mean
-                                )
+            labels,
+
+            datasets: [{
+
+                label: "Meia-vida média (s)",
+
+                data: groups.map(g => g.mean),
+
+                backgroundColor: colors,
+
+                borderColor: colors,
+
+                borderWidth: 1,
+
+                borderRadius: 0,
+
+                maxBarThickness: 42
+
+            }]
+
+        },
+
+        options: {
+
+            responsive: true,
+
+            maintainAspectRatio: false,
+
+            plugins: {
+
+                legend: {
+                    display: true,
+                    position: "top"
+                },
+
+                tooltip: {
+                    callbacks: {
+
+                        title: function(items){
+                            return items[0]?.label || "";
+                        },
+
+                        label: function(context){
+
+                            const group = groups[context.dataIndex];
+
+                            return " " + group.mean.toFixed(2) + " s (N=" + group.n + ")";
 
                         }
 
-                    ]
+                    }
+                }
+
+            },
+
+            scales: {
+
+                x: {
+
+                    ticks: {
+                        autoSkip: false,
+                        maxRotation: 55,
+                        minRotation: 45
+                    },
+
+                    grid: {
+                        color: "rgba(120,140,150,0.18)"
+                    }
 
                 },
 
-                options:{
+                y: {
 
-                    responsive:true,
+                    beginAtZero: true,
 
-                    maintainAspectRatio:false,
+                    title: {
+                        display: true,
+                        text: "Segundos"
+                    },
 
-                    scales:{
-
-                        y:{
-
-                            beginAtZero:true,
-
-                            title:{
-
-                                display:true,
-
-                                text:
-                                    "Segundos"
-
-                            }
-
-                        }
-
+                    grid: {
+                        color: "rgba(120,140,150,0.18)"
                     }
 
                 }
 
             }
-        );
 
+        }
+
+    });
+
+}
+
+
+function drawHalfChart(groups){
+    // Mantido para compatibilidade com versões anteriores.
+    renderScientificHalfChart();
 }
 
 
